@@ -1,60 +1,93 @@
 VISTA Version Index
 Vacation Inventory, Service & Task Administration
+Live site: https://wrsorensen.github.io/VISTA/
+
+Purpose
+Use this index as the GitHub archive control center. Version file links open the hosted snapshots, so old VISTA HTML files do not need to be kept locally. Download from the HTML index grabs this full TXT notes file. v0.0.7 was rolled into v0.0.8 and was not saved as a separate file.
+
+Version History
+
+v0.1.7
+File: VISTA v0.1.7.html
+Download index: VISTA Version Index.txt
+Notes: Added compact Future Updates notes icon under Admin Upload in the VISTA header. Clicking it opens a simple modal with parked roadmap items for Alysha/demo follow-up.
 
 v0.1.6
 File: VISTA v0.1.6.html
+Download index: VISTA Version Index.txt
 Notes: Bug fix: moved Admin Upload modal outside the sidebar/app shell so the correct PIN shows the upload box instead of only dimming the sidebar. Repo prep note added for GitHub handoff.
 
 v0.1.5
 File: VISTA v0.1.5.html
+Download index: VISTA Version Index.txt
 Notes: Mobile/sidebar UX pass. Header reduced to VISTA only, filters collapsed into a compact selected-filter bar with expandable drawer, and upload moved into a standalone admin modal. Security note: demo PIN is temporary; future multi-user Google login/security needed.
 
 v0.1.4
 File: VISTA v0.1.4.html
+Download index: VISTA Version Index.txt
 Notes: Added demo admin PIN gate to the upload button. Current temporary PIN is 1111.
 
 v0.1.3
 File: VISTA v0.1.3.html
+Download index: VISTA Version Index.txt
 Notes: Added separate Area and Tasks filter rows. Filters stack together, filter map pins and property list, and show dynamic counts for severity, issue, inspection, cleaning, admin, and no-task views.
 
 v0.1.2
 File: VISTA v0.1.2.html
+Download index: VISTA Version Index.txt
 Notes: Embedded Task 1 demo layer from the Breezeway closeout sheet. Properties with tasks now show severity color/rings on the map and list. Admin upload moved to the header corner.
 
 v0.1.1
 File: VISTA v0.1.1.html
+Download index: VISTA Version Index.txt
 Notes: Moved Admin Upload from search row to compact upload icon beside Custom count. Clarified demo task data remains local until real Apps Script/GitHub integration.
 
 v0.1.0
 File: VISTA v0.1.0.html
+Download index: VISTA Version Index.txt
 Notes: Admin Breezeway upload added. CSV/XLSX task layer matches rows to properties, adds map/list badges, and opens a clean task details drawer.
 
 v0.0.9
 File: VISTA v0.0.9.html
+Download index: VISTA Version Index.txt
 Notes: Main Office marker added. Office is separate from properties and custom pins.
 
 v0.0.8
 File: VISTA v0.0.8.html
+Download index: VISTA Version Index.txt
 Notes: Area filters zoom to filtered map group. Stats stay portfolio-only.
 
 v0.0.6
 File: VISTA v0.0.6.html
+Download index: VISTA Version Index.txt
 Notes: House icons for properties. Custom pin local save added.
 
 v0.0.5
 File: VISTA v0.0.5.html
+Download index: VISTA Version Index.txt
 Notes: Click map to drop pin. Removed sidebar Directions and Drop Pin buttons.
 
 v0.0.4
 File: VISTA v0.0.4.html
+Download index: VISTA Version Index.txt
 Notes: Cleaned sidebar, smaller pins, nav only in pin popup.
 
 v0.0.3
 File: VISTA v0.0.3.html
+Download index: VISTA Version Index.txt
 Notes: VISTA name added. Streets default. Popup nav icon added.
 
 v0.0.2
 File: SLA Map v0.0.2.html
+Download index: VISTA Version Index.txt
 Notes: Early command-center map version before VISTA rename.
 
-Note: v0.0.7 was rolled into v0.0.8 and was not saved as a separate file.
+Future Updates
+- Default view: decide whether first load should show All Properties, Has Tasks, or only higher-priority task properties.
+- Upload validation: reject files that do not match the required VISTA/Breezeway format.
+- Backend import: accept the same rows and columns every upload until a smarter importer is intentionally built.
+- Future AI import: add assisted column mapping for alternate Breezeway/report downloads, with preview and confirmation before import.
+- Security: replace demo PIN with Google/multi-user login and admin-only upload rights.
+- Task transparency: add a script function to check off completed tasks from the app until a new spreadsheet is uploaded.
+- Data path: move from embedded demo data to Google Apps Script/GitHub-backed data when ready.
+- Mobile access: test through the live GitHub Pages URL, not a local Windows file path.

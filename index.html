@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.1.6</title>
+<title>VISTA v0.1.7</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -546,6 +546,10 @@
       top: 11px;
       right: 16px;
     }
+    #future-notes-btn {
+      top: 43px;
+      right: 16px;
+    }
     #stats-row {
       gap: 10px;
       margin-top: 5px;
@@ -635,7 +639,8 @@
   }
   #search-row #search-input { flex: 1; }
 
-  #admin-upload-btn {
+  #admin-upload-btn,
+  #future-notes-btn {
     position: absolute;
     top: 22px;
     right: 24px;
@@ -653,17 +658,23 @@
     padding: 0;
     cursor: pointer;
   }
-  #admin-upload-btn:hover {
+  #future-notes-btn {
+    top: 54px;
+  }
+  #admin-upload-btn:hover,
+  #future-notes-btn:hover {
     background: #DCE7F3;
     border-color: var(--navy);
   }
-  #admin-upload-btn svg {
+  #admin-upload-btn svg,
+  #future-notes-btn svg {
     width: 13px;
     height: 13px;
     stroke-width: 2.2;
   }
 
-  #upload-backdrop {
+  #upload-backdrop,
+  #future-backdrop {
     display: none;
     position: fixed;
     inset: 0;
@@ -671,8 +682,10 @@
     z-index: 1800;
   }
   #upload-backdrop.open { display: block; }
+  #future-backdrop.open { display: block; }
 
-  #upload-panel {
+  #upload-panel,
+  #future-panel {
     display: none;
     position: fixed;
     top: 50%;
@@ -690,6 +703,17 @@
     z-index: 1900;
   }
   #upload-panel.open { display: block; }
+  #future-panel.open { display: block; }
+  .future-updates-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .future-updates-list li {
+    margin: 7px 0;
+  }
   .panel-title-row {
     display: flex;
     justify-content: space-between;
@@ -1122,6 +1146,14 @@
           <path d="M20 16v4H4v-4"></path>
         </svg>
       </button>
+      <button id="future-notes-btn" type="button" aria-label="Future updates" title="Future updates">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+          <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+          <path d="M8 13h8"></path>
+          <path d="M8 17h5"></path>
+        </svg>
+      </button>
       <h1>VISTA</h1>
             <div id="stats-row">
         <div class="stat"><span class="num" id="stat-properties">–</span><span class="label">Properties</span></div>
@@ -1184,7 +1216,7 @@
       </div>
     </div>
     <div id="list"></div>
-    <div id="footer-note">v0.1.6</div>
+    <div id="footer-note">v0.1.7</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -1213,6 +1245,24 @@
     <input id="task-file-input" type="file" accept=".csv,.xlsx,.xls" />
   </div>
   <div id="upload-summary">No task file loaded.</div>
+</div>
+
+<div id="future-backdrop"></div>
+<div id="future-panel" role="dialog" aria-modal="true" aria-labelledby="future-panel-title">
+  <div class="panel-title-row">
+    <div class="panel-title" id="future-panel-title">Future Updates</div>
+    <button class="icon-close" id="future-close-btn" type="button" aria-label="Close future updates">X</button>
+  </div>
+  <ul class="future-updates-list">
+    <li>Decide default view: All Properties, Has Tasks, or priority/task-first.</li>
+    <li>Connect real Breezeway/task data through Google Apps Script.</li>
+    <li>Add strict admin upload validation for the VISTA/Breezeway schema.</li>
+    <li>Later: AI-assisted column mapping for alternate report formats.</li>
+    <li>Replace demo PIN with Google login and admin permissions.</li>
+    <li>Add task completion/check-off transparency until next upload.</li>
+    <li>Add Alysha feedback/notes through GAS/Form/Sheet.</li>
+    <li>Refine property cards, filters, mobile field use, and shared custom pins.</li>
+  </ul>
 </div>
 
 <script>
@@ -2275,9 +2325,13 @@ window.__deleteCustomPin = async function(id) {
 };
 
 const adminUploadBtn = document.getElementById('admin-upload-btn');
+const futureNotesBtn = document.getElementById('future-notes-btn');
 const uploadBackdrop = document.getElementById('upload-backdrop');
 const uploadPanel = document.getElementById('upload-panel');
 const uploadCloseBtn = document.getElementById('upload-close-btn');
+const futureBackdrop = document.getElementById('future-backdrop');
+const futurePanel = document.getElementById('future-panel');
+const futureCloseBtn = document.getElementById('future-close-btn');
 const uploadZone = document.getElementById('upload-zone');
 const taskFileInput = document.getElementById('task-file-input');
 const drawerCloseBtn = document.getElementById('drawer-close-btn');
@@ -2290,6 +2344,16 @@ function openUploadModal() {
 function closeUploadModal() {
   uploadBackdrop.classList.remove('open');
   uploadPanel.classList.remove('open');
+}
+
+function openFutureModal() {
+  futureBackdrop.classList.add('open');
+  futurePanel.classList.add('open');
+}
+
+function closeFutureModal() {
+  futureBackdrop.classList.remove('open');
+  futurePanel.classList.remove('open');
 }
 
 filterToggleBtn.addEventListener('click', () => {
@@ -2326,10 +2390,20 @@ adminUploadBtn.addEventListener('click', () => {
 
 uploadCloseBtn.addEventListener('click', closeUploadModal);
 uploadBackdrop.addEventListener('click', closeUploadModal);
+futureNotesBtn.addEventListener('click', () => {
+  if (futurePanel.classList.contains('open')) {
+    closeFutureModal();
+    return;
+  }
+  openFutureModal();
+});
+futureCloseBtn.addEventListener('click', closeFutureModal);
+futureBackdrop.addEventListener('click', closeFutureModal);
 
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   closeUploadModal();
+  closeFutureModal();
   filterPanel.classList.remove('open');
   updateFilterSummary();
 });
