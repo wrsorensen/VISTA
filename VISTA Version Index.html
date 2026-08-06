@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISTA Version Index</title>
+<style>
+  :root {
+    --navy: #1F3A5F;
+    --navy-deep: #16283F;
+    --accent: #C97B3F;
+    --paper: #FAF8F4;
+    --panel: #FFFFFF;
+    --line: #E4DFD6;
+    --ink: #26241F;
+    --ink-soft: #6B675E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 36px 22px;
+  }
+
+  h1 {
+    margin: 0;
+    font-family: Georgia, serif;
+    font-size: 34px;
+    color: var(--navy-deep);
+  }
+
+  .subtitle {
+    margin: 5px 0 24px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .note {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+
+  .top-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin: -6px 0 18px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  th {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: #F5F1EA;
+  }
+
+  tr:last-child td { border-bottom: 0; }
+
+  .version {
+    font-weight: 700;
+    color: var(--navy-deep);
+    white-space: nowrap;
+  }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  a.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 82px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid #CBD9E8;
+    background: #EAF0F7;
+    color: var(--navy);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  a.button.primary {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: white;
+  }
+
+  a.button:hover {
+    filter: brightness(0.96);
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>VISTA Version Index</h1>
+  <div class="subtitle">Vacation Inventory, Service &amp; Task Administration</div>
+
+  <div class="note">
+    Use this page as the local launch/download index for saved HTML versions. v0.0.7 was rolled into v0.0.8 and was not saved as a separate file.
+  </div>
+
+  <div class="top-actions">
+    <a class="button" id="download-index-link" href="VISTA%20Version%20Index.txt" download="VISTA Version Index.txt">Download Index</a>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Version</th>
+        <th>Notes</th>
+        <th>File</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="version">v0.1.6</td>
+        <td>Bug fix: moved Admin Upload modal outside the sidebar/app shell so the correct PIN shows the upload box instead of only dimming the sidebar. Repo prep note added for GitHub handoff.</td>
+        <td>VISTA v0.1.6.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.1.6.html">Open</a><a class="button" href="VISTA%20v0.1.6.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.1.5</td>
+        <td>Mobile/sidebar UX pass. Header reduced to VISTA only, filters collapsed into a compact selected-filter bar with expandable drawer, and upload moved into a standalone admin modal. Security note: demo PIN is temporary; future multi-user Google login/security needed.</td>
+        <td>VISTA v0.1.5.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.1.5.html">Open</a><a class="button" href="VISTA%20v0.1.5.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.1.4</td>
+        <td>Added demo admin PIN gate to the upload button. Current temporary PIN is 1111.</td>
+        <td>VISTA v0.1.4.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.1.4.html">Open</a><a class="button" href="VISTA%20v0.1.4.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.1.3</td>
+        <td>Added separate Area and Tasks filter rows. Filters stack together, filter map pins and property list, and show dynamic counts for severity, issue, inspection, cleaning, admin, and no-task views.</td>
+        <td>VISTA v0.1.3.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.1.3.html">Open</a><a class="button" href="VISTA%20v0.1.3.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.1.2</td>
+        <td>Embedded Task 1 demo layer from the Breezeway closeout sheet. Properties with tasks now show severity color/rings on the map and list. Admin upload moved to the header corner.</td>
+        <td>VISTA v0.1.2.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.1.2.html">Open</a><a class="button" href="VISTA%20v0.1.2.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.1.1</td>
+        <td>Moved Admin Upload from search row to compact upload icon beside Custom count. Clarified demo task data remains local until real Apps Script/GitHub integration.</td>
+        <td>VISTA v0.1.1.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.1.1.html">Open</a><a class="button" href="VISTA%20v0.1.1.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.1.0</td>
+        <td>Admin Breezeway upload added. CSV/XLSX task layer matches rows to properties, adds map/list badges, and opens a clean task details drawer.</td>
+        <td>VISTA v0.1.0.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.1.0.html">Open</a><a class="button" href="VISTA%20v0.1.0.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.0.9</td>
+        <td>Main Office marker added. Office is separate from properties and custom pins.</td>
+        <td>VISTA v0.0.9.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.0.9.html">Open</a><a class="button" href="VISTA%20v0.0.9.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.0.8</td>
+        <td>Area filters zoom to filtered map group. Stats stay portfolio-only.</td>
+        <td>VISTA v0.0.8.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.0.8.html">Open</a><a class="button" href="VISTA%20v0.0.8.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.0.6</td>
+        <td>House icons for properties. Custom pin local save added.</td>
+        <td>VISTA v0.0.6.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.0.6.html">Open</a><a class="button" href="VISTA%20v0.0.6.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.0.5</td>
+        <td>Click map to drop pin. Removed sidebar Directions and Drop Pin buttons.</td>
+        <td>VISTA v0.0.5.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.0.5.html">Open</a><a class="button" href="VISTA%20v0.0.5.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.0.4</td>
+        <td>Cleaned sidebar, smaller pins, nav only in pin popup.</td>
+        <td>VISTA v0.0.4.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.0.4.html">Open</a><a class="button" href="VISTA%20v0.0.4.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.0.3</td>
+        <td>VISTA name added. Streets default. Popup nav icon added.</td>
+        <td>VISTA v0.0.3.html</td>
+        <td class="actions"><a class="button primary" href="VISTA%20v0.0.3.html">Open</a><a class="button" href="VISTA%20v0.0.3.html" download>Download</a></td>
+      </tr>
+      <tr>
+        <td class="version">v0.0.2</td>
+        <td>Early command-center map version before VISTA rename.</td>
+        <td>SLA Map v0.0.2.html</td>
+        <td class="actions"><a class="button primary" href="SLA%20Map%20v0.0.2.html">Open</a><a class="button" href="SLA%20Map%20v0.0.2.html" download>Download</a></td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+<script>
+  const downloadLink = document.getElementById('download-index-link');
+  const rows = Array.from(document.querySelectorAll('tbody tr')).map(row => {
+    const cells = row.querySelectorAll('td');
+    return `${cells[0].innerText}\nFile: ${cells[2].innerText}\nNotes: ${cells[1].innerText}`;
+  });
+  const textIndex = `VISTA Version Index\nVacation Inventory, Service & Task Administration\n\n${rows.join('\n\n')}\n\nNote: v0.0.7 was rolled into v0.0.8 and was not saved as a separate file.\n`;
+  const blob = new Blob([textIndex], { type: 'text/plain;charset=utf-8' });
+  downloadLink.href = URL.createObjectURL(blob);
+</script>
+</body>
+</html>
