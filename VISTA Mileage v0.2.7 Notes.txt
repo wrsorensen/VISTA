@@ -1,0 +1,17 @@
+VISTA Mileage v0.2.7 Notes
+
+Purpose
+Refine Mileage for Alysha's live use while odometer-based tracking is still required.
+
+Implemented
+- Saved mileage entries are one-line expandable rows.
+- Mileage log date is larger and has no pill/background style.
+- Removed saved-to-sheet status text from saved mileage rows.
+- Start trip captures Start location once.
+- Stops require location and odometer.
+- End Trip prompts for End location and End odometer.
+- Settings now includes a small About/version section.
+- Removed the old Current focus home text.
+
+Backend note
+No GAS script redeploy was required for this pass. The app still sends the mileage payload to the existing backend. Start-to-end route is also written into the existing route field for Sheet usefulness.

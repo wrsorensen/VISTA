@@ -7,6 +7,11 @@ Use this index as the GitHub archive control center. Version file links open the
 
 Version History
 
+v0.2.7
+File: VISTA v0.2.7.html
+Download index: VISTA Version Index.txt
+Notes: Updated Mileage for Alysha's live trip flow. Saved mileage rows are now one-line expandable entries with larger date text and no saved-to-sheet status text. Start now captures a start location once, stops require location plus odometer, and End Trip prompts for end location plus end odometer. Settings now includes a small About/version section and the old Current focus home text was removed.
+
 v0.2.6
 File: VISTA v0.2.6.html
 Download index: VISTA Version Index.txt
