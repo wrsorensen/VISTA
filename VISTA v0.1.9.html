@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.5</title>
+<title>VISTA v0.1.9</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -12,25 +12,18 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
   :root {
-    --vista-navy: #0B3557;
-    --vista-teal: #167789;
-    --vista-aqua: #55AAB0;
-    --vista-sage: #789178;
-    --vista-gold: #F2B33D;
-    --vista-limestone: #E9DDC7;
-    --vista-warm-white: #FAF8F3;
-    --navy: var(--vista-navy);
-    --navy-deep: #07243D;
-    --accent: var(--vista-teal);
-    --paper: var(--vista-warm-white);
+    --navy: #1F3A5F;
+    --navy-deep: #16283F;
+    --accent: #C97B3F;
+    --paper: #FAF8F4;
     --panel: #FFFFFF;
-    --line: var(--vista-limestone);
+    --line: #E4DFD6;
     --ink: #26241F;
     --ink-soft: #6B675E;
     --severity-urgent: #B94235;
-    --severity-high: var(--vista-gold);
-    --severity-medium: var(--vista-sage);
-    --severity-low: var(--vista-teal);
+    --severity-high: #C97B3F;
+    --severity-medium: #6F7F32;
+    --severity-low: #2F6F73;
   }
 
   * { box-sizing: border-box; }
@@ -85,39 +78,6 @@
     color: var(--navy-deep);
     font-weight: 700;
     line-height: 1.2;
-  }
-
-  .brand-lockup,
-  .sidebar-brand-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .brand-mark-placeholder {
-    flex: 0 0 auto;
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(145deg, var(--vista-navy), var(--vista-teal));
-    color: var(--vista-warm-white);
-    border: 1px solid rgba(233,221,199,0.72);
-    box-shadow: 0 8px 18px rgba(11,53,87,0.18);
-    font-family: Georgia, serif;
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1;
-  }
-
-  #sidebar-header .brand-mark-placeholder {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    font-size: 18px;
-    box-shadow: none;
   }
 
   #sidebar-header .subtitle {
@@ -587,6 +547,10 @@
       top: 11px;
       right: 16px;
     }
+    #future-notes-btn {
+      top: 43px;
+      right: 16px;
+    }
     #stats-row {
       gap: 10px;
       margin-top: 5px;
@@ -676,7 +640,8 @@
   }
   #search-row #search-input { flex: 1; }
 
-  #admin-upload-btn {
+  #admin-upload-btn,
+  #future-notes-btn {
     position: absolute;
     top: 22px;
     right: 24px;
@@ -694,17 +659,23 @@
     padding: 0;
     cursor: pointer;
   }
-  #admin-upload-btn:hover {
+  #future-notes-btn {
+    top: 54px;
+  }
+  #admin-upload-btn:hover,
+  #future-notes-btn:hover {
     background: #DCE7F3;
     border-color: var(--navy);
   }
-  #admin-upload-btn svg {
+  #admin-upload-btn svg,
+  #future-notes-btn svg {
     width: 13px;
     height: 13px;
     stroke-width: 2.2;
   }
 
-  #upload-backdrop {
+  #upload-backdrop,
+  #future-backdrop {
     display: none;
     position: fixed;
     inset: 0;
@@ -712,8 +683,10 @@
     z-index: 1800;
   }
   #upload-backdrop.open { display: block; }
+  #future-backdrop.open { display: block; }
 
-  #upload-panel {
+  #upload-panel,
+  #future-panel {
     display: none;
     position: fixed;
     top: 50%;
@@ -731,6 +704,17 @@
     z-index: 1900;
   }
   #upload-panel.open { display: block; }
+  #future-panel.open { display: block; }
+  .future-updates-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .future-updates-list li {
+    margin: 7px 0;
+  }
   .panel-title-row {
     display: flex;
     justify-content: space-between;
@@ -1249,17 +1233,17 @@
   .module-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px 12px;
+    gap: 12px;
   }
   .module-tile {
-    min-height: 92px;
-    border: 0;
-    border-radius: 14px;
-    background: transparent;
-    box-shadow: none;
+    min-height: 104px;
+    border: 1px solid rgba(31,58,95,0.12);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.82);
+    box-shadow: 0 8px 20px rgba(31,58,95,0.08);
     color: var(--ink);
     cursor: pointer;
-    padding: 8px 5px;
+    padding: 11px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1268,45 +1252,27 @@
     text-align: center;
     font-family: 'Helvetica Neue', Arial, sans-serif;
   }
-  .module-tile:focus-visible {
-    outline: 2px solid var(--vista-gold);
-    outline-offset: 4px;
-  }
-  .module-tile:hover {
-    background: rgba(255,255,255,0.42);
-  }
   .module-tile:active {
     transform: translateY(1px);
-    background: rgba(233,221,199,0.38);
   }
   .module-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: 16px;
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: white;
     background: var(--navy);
-    box-shadow: 0 8px 16px rgba(11,53,87,0.16);
-  }
-  .module-icon i,
-  .bottom-nav-btn i {
-    font-style: normal;
-  }
-  .module-icon i::before,
-  .bottom-nav-btn i::before {
-    content: attr(data-fallback);
   }
   .module-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     stroke-width: 2.2;
   }
-  .module-tile.teal .module-icon { background: var(--vista-teal); }
-  .module-tile.clay .module-icon { background: var(--vista-gold); color: var(--vista-navy); }
-  .module-tile.sage .module-icon { background: var(--vista-sage); }
-  .module-tile.red .module-icon,
+  .module-tile[data-tone="teal"] .module-icon { background: #2F6F73; }
+  .module-tile[data-tone="clay"] .module-icon { background: var(--accent); }
+  .module-tile[data-tone="sage"] .module-icon { background: #6F7F32; }
   .module-tile[data-tone="red"] .module-icon { background: var(--severity-urgent); }
   .module-label {
     font-size: 12px;
@@ -1370,14 +1336,6 @@
     font-weight: 800;
     padding: 9px 11px;
   }
-  .module-back-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 999px;
-    padding: 0;
-    font-size: 20px;
-    line-height: 1;
-  }
   .module-action-list {
     display: grid;
     gap: 10px;
@@ -1399,222 +1357,6 @@
     color: var(--ink-soft);
     font-size: 13px;
     line-height: 1.45;
-  }
-  .module-version {
-    margin-top: auto;
-    padding-top: 18px;
-    color: rgba(107,103,94,0.62);
-    font-size: 10px;
-    text-align: center;
-  }
-  .issues-tools {
-    display: grid;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .issues-search,
-  .issues-filter {
-    width: 100%;
-    min-height: 42px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: rgba(255,255,255,0.86);
-    color: var(--ink);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 13px;
-    padding: 9px 10px;
-  }
-  .issues-table-wrap {
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    overflow: auto;
-    background: rgba(255,255,255,0.82);
-  }
-  .issues-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 680px;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 12px;
-  }
-  .issues-table th,
-  .issues-table td {
-    padding: 10px;
-    border-bottom: 1px solid var(--line);
-    text-align: left;
-    vertical-align: top;
-  }
-  .issues-table th {
-    position: sticky;
-    top: 0;
-    background: #F5F1EA;
-    color: var(--ink-soft);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    z-index: 1;
-  }
-  .issues-table tr:last-child td {
-    border-bottom: 0;
-  }
-  .issues-priority {
-    display: inline-flex;
-    border-radius: 999px;
-    padding: 2px 7px;
-    background: #EAF0F7;
-    color: var(--navy);
-    font-size: 10px;
-    font-weight: 800;
-  }
-  .issues-priority.urgent,
-  .issues-priority.high {
-    background: #F7E9E5;
-    color: var(--severity-urgent);
-  }
-  .mileage-shell {
-    display: grid;
-    gap: 16px;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-  }
-  .mileage-status {
-    color: var(--ink-soft);
-    font-size: 12px;
-    line-height: 1.45;
-    min-height: 18px;
-  }
-  .mileage-open-line {
-    color: var(--navy-deep);
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.35;
-  }
-  .mileage-fields {
-    display: grid;
-    gap: 11px;
-  }
-  .mileage-field label {
-    display: block;
-    color: var(--ink-soft);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .mileage-field input,
-  .mileage-field textarea {
-    width: 100%;
-    min-height: 42px;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    background: transparent;
-    color: var(--ink);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 15px;
-    padding: 8px 0;
-  }
-  .mileage-field textarea {
-    min-height: 72px;
-    resize: vertical;
-  }
-  .mileage-field input:focus,
-  .mileage-field textarea:focus {
-    outline: 0;
-    border-color: var(--vista-teal);
-  }
-  .mileage-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-  .mileage-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .mileage-actions button {
-    min-height: 42px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--navy);
-    cursor: pointer;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-    padding: 9px 12px;
-  }
-  .mileage-actions button.primary {
-    background: var(--navy);
-    border-color: var(--navy);
-    color: white;
-  }
-  .mileage-actions button.danger {
-    color: var(--severity-urgent);
-  }
-  .mileage-total {
-    color: var(--navy-deep);
-    font-family: Georgia, serif;
-    font-size: 28px;
-    font-weight: 800;
-    line-height: 1.1;
-  }
-  .mileage-total span {
-    display: block;
-    color: var(--ink-soft);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    margin-top: 2px;
-    text-transform: uppercase;
-  }
-  .mileage-list {
-    display: grid;
-    gap: 8px;
-  }
-  .mileage-list-title {
-    color: var(--ink-soft);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .mileage-stop,
-  .mileage-log {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    border-bottom: 1px solid var(--line);
-    padding: 8px 0;
-    color: var(--ink);
-    font-size: 13px;
-    line-height: 1.35;
-  }
-  .mileage-stop small,
-  .mileage-log small {
-    display: block;
-    color: var(--ink-soft);
-    font-size: 11px;
-    margin-top: 2px;
-  }
-  .mileage-copy {
-    width: 100%;
-    min-height: 40px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--navy);
-    cursor: pointer;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-  }
-  @media (max-width: 380px) {
-    .mileage-row {
-      grid-template-columns: 1fr;
-    }
   }
   #bottom-nav {
     position: fixed;
@@ -1689,12 +1431,9 @@
 <section id="home-screen" class="open" aria-label="VISTA home">
   <div class="phone-shell">
     <div class="home-top">
-      <div class="brand-lockup">
-        <div class="brand-mark-placeholder" data-brand-slot="header-ready-logo" title="VISTA logo placeholder">V</div>
-        <div>
-          <div class="home-brand">VISTA</div>
-          <div class="home-subtitle">Stay Local Austin operations</div>
-        </div>
+      <div>
+        <div class="home-brand">VISTA</div>
+        <div class="home-subtitle">Stay Local Austin operations</div>
       </div>
       <div class="home-date" id="home-date">Today</div>
     </div>
@@ -1715,7 +1454,7 @@
           <div class="module-kicker" id="module-kicker">VISTA</div>
         </div>
       </div>
-      <button class="module-close-btn module-back-btn" id="module-close-btn" type="button" aria-label="Back">‹</button>
+      <button class="module-close-btn" id="module-close-btn" type="button">Home</button>
     </div>
     <div id="module-body"></div>
   </div>
@@ -1731,10 +1470,15 @@
           <path d="M20 16v4H4v-4"></path>
         </svg>
       </button>
-      <div class="sidebar-brand-row">
-        <div class="brand-mark-placeholder" data-brand-slot="compact-header-mark" title="VISTA logo placeholder">V</div>
-        <h1>VISTA</h1>
-      </div>
+      <button id="future-notes-btn" type="button" aria-label="Future updates" title="Future updates">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+          <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+          <path d="M8 13h8"></path>
+          <path d="M8 17h5"></path>
+        </svg>
+      </button>
+      <h1>VISTA</h1>
             <div id="stats-row">
         <div class="stat"><span class="num" id="stat-properties">–</span><span class="label">Properties</span></div>
         <div class="stat"><span class="num" id="stat-addresses">–</span><span class="label">Addresses</span></div>
@@ -1796,7 +1540,7 @@
       </div>
     </div>
     <div id="list"></div>
-    <div id="footer-note">v0.2.5</div>
+    <div id="footer-note">v0.1.9</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -1814,19 +1558,19 @@
 
 <nav id="bottom-nav" aria-label="VISTA navigation">
   <button class="bottom-nav-btn active" type="button" data-nav="home">
-    <i data-lucide="home" data-fallback="H"></i>
+    <i data-lucide="home"></i>
     <span>Home</span>
   </button>
   <button class="bottom-nav-btn" type="button" data-nav="map">
-    <i data-lucide="map" data-fallback="M"></i>
+    <i data-lucide="map"></i>
     <span>Map</span>
   </button>
   <button class="bottom-nav-btn" type="button" data-nav="issues">
-    <i data-lucide="circle-alert" data-fallback="!"></i>
+    <i data-lucide="circle-alert"></i>
     <span>Issues</span>
   </button>
   <button class="bottom-nav-btn" type="button" data-nav="more">
-    <i data-lucide="ellipsis" data-fallback="+"></i>
+    <i data-lucide="ellipsis"></i>
     <span>More</span>
   </button>
 </nav>
@@ -1848,6 +1592,24 @@
     <button id="upload-confirm-btn" type="button">Confirm Import</button>
     <button id="upload-cancel-btn" type="button">Cancel</button>
   </div>
+</div>
+
+<div id="future-backdrop"></div>
+<div id="future-panel" role="dialog" aria-modal="true" aria-labelledby="future-panel-title">
+  <div class="panel-title-row">
+    <div class="panel-title" id="future-panel-title">Future Updates</div>
+    <button class="icon-close" id="future-close-btn" type="button" aria-label="Close future updates">X</button>
+  </div>
+  <ul class="future-updates-list">
+    <li>Decide default view: All Properties, Has Tasks, or priority/task-first.</li>
+    <li>Connect real Breezeway/task data through Google Apps Script.</li>
+    <li>Add strict admin upload validation for the VISTA/Breezeway schema.</li>
+    <li>Later: AI-assisted column mapping for alternate report formats.</li>
+    <li>Replace demo PIN with Google login and admin permissions.</li>
+    <li>Add task completion/check-off transparency until next upload.</li>
+    <li>Add Alysha feedback/notes through GAS/Form/Sheet.</li>
+    <li>Refine property cards, filters, mobile field use, and shared custom pins.</li>
+  </ul>
 </div>
 
 <script>
@@ -1905,9 +1667,6 @@ let pendingTaskImport = null;
 let taskSummaryByIdx = new Map();
 
 const TASK_STORAGE_KEY = 'vista_task_upload_v1';
-const MILEAGE_STORAGE_KEY = 'vista_mileage_v1';
-const MILEAGE_SYNC_QUEUE_KEY = 'vista_mileage_sync_queue_v1';
-const VISTA_GAS_URL = 'https://script.google.com/macros/s/AKfycbzRY5uyn78gfhfgV92R-LyJHjYzAsM_Hs9WXpBo6j0zljsyzo0TYlmsZHRLgIHJjK2d/exec';
 const ADMIN_UPLOAD_PIN = '1111';
 const TASK_REQUIRED_HEADER_GROUPS = [
   { label: 'Property', candidates: ['Property', 'Property Name', 'Listing', 'Home', 'Unit'] },
@@ -1935,50 +1694,38 @@ const TASK_FILTERS = [
 ];
 
 const HOME_MODULES = [
-  { key: 'map', label: 'Property Map', icon: 'map', fallback: 'M', tone: 'teal' },
-  { key: 'properties', label: 'Properties', icon: 'house', fallback: 'P', tone: 'navy' },
-  { key: 'issues', label: 'Priority Issues', icon: 'circle-alert', fallback: '!', tone: 'red' },
-  { key: 'mileage', label: 'Mileage', icon: 'car', fallback: 'Mi', tone: 'clay' },
-  { key: 'notes', label: 'Notes', icon: 'notebook-pen', fallback: 'N', tone: 'sage' },
-  { key: 'work-orders', label: 'Work Orders', icon: 'wrench', fallback: 'W', tone: 'navy' },
-  { key: 'inventory', label: 'Inventory', icon: 'package', fallback: 'I', tone: 'clay' },
-  { key: 'summary', label: 'Daily Summary', icon: 'chart-no-axes-column', fallback: 'D', tone: 'teal' },
-  { key: 'settings', label: 'Settings', icon: 'settings', fallback: 'S', tone: 'sage' }
+  { key: 'map', label: 'Property Map', icon: 'map', tone: 'teal' },
+  { key: 'properties', label: 'Properties', icon: 'house', tone: 'navy' },
+  { key: 'issues', label: 'Priority Issues', icon: 'circle-alert', tone: 'red' },
+  { key: 'mileage', label: 'Mileage', icon: 'car', tone: 'clay' },
+  { key: 'notes', label: 'Notes', icon: 'notebook-pen', tone: 'sage' },
+  { key: 'work-orders', label: 'Work Orders', icon: 'wrench', tone: 'navy' },
+  { key: 'inventory', label: 'Inventory', icon: 'package', tone: 'clay' },
+  { key: 'summary', label: 'Daily Summary', icon: 'chart-no-axes-column', tone: 'teal' },
+  { key: 'settings', label: 'Settings', icon: 'settings', tone: 'sage' }
 ];
 
 const MODULE_COPY = {
-  issues: {
-    title: 'Priority Issues',
-    kicker: 'Task table',
-    icon: 'circle-alert',
-    fallback: '!',
-    tone: 'red',
-    body: '',
-    actions: []
-  },
   properties: {
     title: 'Properties',
     kicker: 'Master records',
     icon: 'house',
-    fallback: 'P',
     tone: 'navy',
     body: 'Property detail cards will live here. The current property list is available in Map.',
     actions: [{ label: 'Open Property Map', action: 'map' }]
   },
   mileage: {
     title: 'Mileage',
-    kicker: 'Work day route',
+    kicker: 'Field visits',
     icon: 'car',
-    fallback: 'Mi',
     tone: 'clay',
-    body: '',
-    actions: []
+    body: 'Start Day, Arrived, Add Stop, and End Day will be built after phone GPS behavior is tested.',
+    actions: [{ label: 'Open Property Map', action: 'map' }]
   },
   notes: {
     title: 'Notes',
     kicker: 'Quick capture',
     icon: 'notebook-pen',
-    fallback: 'N',
     tone: 'sage',
     body: 'Notes will attach to properties, issues, work orders, vendors, and mileage trips.',
     actions: [{ label: 'Open Property Map', action: 'map' }]
@@ -1987,7 +1734,6 @@ const MODULE_COPY = {
     title: 'Work Orders',
     kicker: 'Close-out',
     icon: 'wrench',
-    fallback: 'W',
     tone: 'navy',
     body: 'Close-out proof, billing status, and sign-off checks will connect back to the same issue records.',
     actions: [{ label: 'View Priority Issues', action: 'issues' }]
@@ -1996,7 +1742,6 @@ const MODULE_COPY = {
     title: 'Inventory',
     kicker: 'Linens and supplies',
     icon: 'package',
-    fallback: 'I',
     tone: 'clay',
     body: 'Inventory will use one shared engine for linens, disposables, par levels, and restocking.',
     actions: [{ label: 'Open Property Map', action: 'map' }]
@@ -2005,7 +1750,6 @@ const MODULE_COPY = {
     title: 'Daily Summary',
     kicker: 'Today',
     icon: 'chart-no-axes-column',
-    fallback: 'D',
     tone: 'teal',
     body: 'Daily Summary will collect the highest-priority issues, visits, notes, and mileage totals.',
     actions: [{ label: 'View Priority Issues', action: 'issues' }]
@@ -2014,20 +1758,19 @@ const MODULE_COPY = {
     title: 'Settings',
     kicker: 'Shared config',
     icon: 'settings',
-    fallback: 'S',
     tone: 'sage',
     body: 'Labels, units, date format, map preference, and thresholds will update globally from here.',
-    actions: []
+    actions: [{ label: 'Open More', action: 'more' }]
   },
   more: {
     title: 'More',
     kicker: 'Admin and reference',
     icon: 'ellipsis',
-    fallback: '+',
     tone: 'navy',
-    body: 'Admin-only tools and lower-priority reference links stay here so field work stays uncluttered.',
+    body: 'Lower-priority tools stay here so field work stays uncluttered.',
     actions: [
       { label: 'Admin Upload', action: 'admin-upload' },
+      { label: 'Future Updates', action: 'future-updates' },
       { label: 'Settings', action: 'settings' }
     ]
   }
@@ -3108,9 +2851,13 @@ window.__deleteCustomPin = async function(id) {
 };
 
 const adminUploadBtn = document.getElementById('admin-upload-btn');
+const futureNotesBtn = document.getElementById('future-notes-btn');
 const uploadBackdrop = document.getElementById('upload-backdrop');
 const uploadPanel = document.getElementById('upload-panel');
 const uploadCloseBtn = document.getElementById('upload-close-btn');
+const futureBackdrop = document.getElementById('future-backdrop');
+const futurePanel = document.getElementById('future-panel');
+const futureCloseBtn = document.getElementById('future-close-btn');
 const uploadZone = document.getElementById('upload-zone');
 const taskFileInput = document.getElementById('task-file-input');
 const uploadConfirmBtn = document.getElementById('upload-confirm-btn');
@@ -3127,7 +2874,6 @@ const moduleBody = document.getElementById('module-body');
 const moduleCloseBtn = document.getElementById('module-close-btn');
 const bottomNav = document.getElementById('bottom-nav');
 let activeShellView = 'home';
-let shellHistory = [];
 
 function openUploadModal() {
   uploadBackdrop.classList.add('open');
@@ -3137,6 +2883,16 @@ function openUploadModal() {
 function closeUploadModal() {
   uploadBackdrop.classList.remove('open');
   uploadPanel.classList.remove('open');
+}
+
+function openFutureModal() {
+  futureBackdrop.classList.add('open');
+  futurePanel.classList.add('open');
+}
+
+function closeFutureModal() {
+  futureBackdrop.classList.remove('open');
+  futurePanel.classList.remove('open');
 }
 
 function refreshAppIcons() {
@@ -3172,20 +2928,18 @@ function setTaskFilter(nextFilter) {
   updateFilterSummary();
 }
 
-function openShellHome(options = {}) {
+function openShellHome() {
   activeShellView = 'home';
   homeScreen.classList.add('open');
   moduleScreen.classList.remove('open');
-  if (!options.keepHistory) shellHistory = [];
   updateBottomNav('home');
   refreshAppIcons();
 }
 
-function openShellMap(navKey = 'map', taskFilter = 'All Properties', options = {}) {
+function openShellMap(navKey = 'map', taskFilter = 'All Properties') {
   activeShellView = navKey;
   homeScreen.classList.remove('open');
   moduleScreen.classList.remove('open');
-  if (!options.keepHistory) shellHistory = [];
   setTaskFilter(taskFilter);
   updateBottomNav(navKey);
   setTimeout(() => {
@@ -3197,9 +2951,9 @@ function openShellMap(navKey = 'map', taskFilter = 'All Properties', options = {
 
 function getModuleIconColor(tone) {
   const colors = {
-    teal: 'var(--vista-teal)',
-    clay: 'var(--vista-gold)',
-    sage: 'var(--vista-sage)',
+    teal: '#2F6F73',
+    clay: 'var(--accent)',
+    sage: '#6F7F32',
     red: '#B4473D',
     navy: 'var(--navy)'
   };
@@ -3210,11 +2964,13 @@ function runModuleAction(action) {
   if (action === 'map') {
     openShellMap('map', 'All Properties');
   } else if (action === 'issues') {
-    openModuleScreen('issues');
+    openShellMap('issues', 'Has Tasks');
   } else if (action === 'more') {
     openModuleScreen('more');
   } else if (action === 'settings') {
     openModuleScreen('settings');
+  } else if (action === 'future-updates') {
+    openFutureModal();
   } else if (action === 'admin-upload') {
     const enteredPin = window.prompt('Admin PIN');
     if (enteredPin === ADMIN_UPLOAD_PIN) {
@@ -3225,527 +2981,27 @@ function runModuleAction(action) {
   }
 }
 
-function openModuleBack() {
-  const target = shellHistory.pop() || 'home';
-  if (target === 'home') {
-    openShellHome({ keepHistory: true });
-  } else if (target === 'map') {
-    openShellMap('map', 'All Properties', { keepHistory: true });
-  } else {
-    openModuleScreen(target, { skipHistory: true });
-  }
-}
-
-function getIssueRows(filter = 'Priority', query = '') {
-  const q = normalizeKey(query);
-  return taskRows
-    .map(row => ({
-      ...row,
-      severity: row.severity || getTaskSeverity(row),
-      category: row.category || classifyTask(row)
-    }))
-    .filter(row => {
-      if (filter === 'Priority' && !['urgent', 'high'].includes(row.severity)) return false;
-      if (filter === 'Urgent' && row.severity !== 'urgent') return false;
-      if (filter === 'High' && row.severity !== 'high') return false;
-      if (filter === 'Medium' && row.severity !== 'medium') return false;
-      if (filter === 'Issues' && row.category !== 'Property Issue') return false;
-      if (filter === 'Inspections' && row.category !== 'Inspection') return false;
-      if (filter === 'Cleaning' && row.category !== 'Cleaning') return false;
-      if (filter === 'Admin' && row.category !== 'Admin') return false;
-      if (!q) return true;
-      return normalizeKey(`${row.property} ${row.title} ${row.department} ${row.assignee} ${row.status} ${row.bucket} ${row.type}`).includes(q);
-    })
-    .sort((a, b) => {
-      const severityDiff = SEVERITY_RANK[b.severity] - SEVERITY_RANK[a.severity];
-      if (severityDiff) return severityDiff;
-      return String(a.due || '').localeCompare(String(b.due || ''));
-    });
-}
-
-function renderIssuesTable() {
-  const filterEl = document.getElementById('issues-filter');
-  const searchEl = document.getElementById('issues-search');
-  const tableEl = document.getElementById('issues-table-body');
-  const countEl = document.getElementById('issues-count');
-  if (!filterEl || !searchEl || !tableEl || !countEl) return;
-
-  const rows = getIssueRows(filterEl.value, searchEl.value);
-  countEl.textContent = `${rows.length} tasks`;
-  tableEl.innerHTML = rows.slice(0, 400).map(row => {
-    const title = row.link
-      ? `<a href="${escapeHtml(row.link)}" target="_blank" rel="noopener">${escapeHtml(row.title || 'Untitled task')}</a>`
-      : escapeHtml(row.title || 'Untitled task');
-    return `
-      <tr>
-        <td><span class="issues-priority ${escapeHtml(row.severity)}">${escapeHtml(SEVERITY_LABEL[row.severity] || row.severity)}</span></td>
-        <td>${escapeHtml(row.due || '')}</td>
-        <td>${escapeHtml(row.property || '')}</td>
-        <td>${title}</td>
-        <td>${escapeHtml(row.department || row.type || row.category || '')}</td>
-        <td>${escapeHtml(row.assignee || '')}</td>
-        <td>${escapeHtml(row.bwStatus || row.status || '')}</td>
-      </tr>
-    `;
-  }).join('');
-  if (rows.length > 400) {
-    tableEl.insertAdjacentHTML('beforeend', `<tr><td colspan="7">Showing first 400. Use search or filter to narrow the list.</td></tr>`);
-  }
-}
-
-function mileageToday() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function loadMileageState() {
-  const fallback = { openSession: null, logs: [] };
-  try {
-    const saved = localStorage.getItem(MILEAGE_STORAGE_KEY);
-    if (!saved) return fallback;
-    const parsed = JSON.parse(saved);
-    return {
-      openSession: parsed.openSession || null,
-      logs: Array.isArray(parsed.logs) ? parsed.logs : []
-    };
-  } catch (e) {
-    return fallback;
-  }
-}
-
-let mileageState = loadMileageState();
-
-function saveMileageState() {
-  localStorage.setItem(MILEAGE_STORAGE_KEY, JSON.stringify(mileageState));
-}
-
-function loadMileageQueue() {
-  try {
-    const saved = localStorage.getItem(MILEAGE_SYNC_QUEUE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveMileageQueue(queue) {
-  localStorage.setItem(MILEAGE_SYNC_QUEUE_KEY, JSON.stringify(queue));
-}
-
-function queueMileageSync(record, reason) {
-  const queue = loadMileageQueue();
-  queue.unshift({
-    id: record.id,
-    record,
-    reason: reason || 'Backend not connected',
-    queuedAt: new Date().toISOString()
-  });
-  saveMileageQueue(queue.slice(0, 100));
-}
-
-function markMileageLogSync(id, status, sheetRow) {
-  mileageState.logs = (mileageState.logs || []).map(log => {
-    if (log.id !== id) return log;
-    return {
-      ...log,
-      saveStatus: status,
-      sheetRow: sheetRow || log.sheetRow || '',
-      updatedAt: new Date().toISOString()
-    };
-  });
-  saveMileageState();
-}
-
-function mileageNumber(value) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-}
-
-function mileageTotal(startOdometer, endOdometer) {
-  const start = mileageNumber(startOdometer);
-  const end = mileageNumber(endOdometer);
-  if (start === null || end === null || end < start) return null;
-  return Math.round((end - start) * 10) / 10;
-}
-
-function getMileageValue(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-
-function setMileageStatus(message, isError = false) {
-  const el = document.getElementById('mileage-status');
-  if (!el) return;
-  el.textContent = message || '';
-  el.style.color = isError ? 'var(--severity-urgent)' : 'var(--ink-soft)';
-}
-
-function mileageLastOdometer(session) {
-  const stops = (session && session.stops) || [];
-  for (let i = stops.length - 1; i >= 0; i--) {
-    if (mileageNumber(stops[i].odometer) !== null) return stops[i].odometer;
-  }
-  return session ? session.startOdometer : '';
-}
-
-function mileageSummaryText(record) {
-  const stops = (record.stops || [])
-    .map((stop, idx) => `${idx + 1}. ${stop.label || 'Stop'}${stop.odometer ? ` @ ${stop.odometer}` : ''}${stop.notes ? ` - ${stop.notes}` : ''}`)
-    .join('\n');
-  const miles = record.totalMiles !== undefined && record.totalMiles !== null
-    ? `${record.totalMiles} miles`
-    : 'Mileage day open';
-  return [
-    `VISTA Mileage - ${record.date || mileageToday()}`,
-    `Vehicle: ${record.vehicle || ''}`,
-    `Work area: ${record.workArea || ''}`,
-    `Route/property: ${record.route || ''}`,
-    `Start odometer: ${record.startOdometer || ''}`,
-    `End odometer: ${record.endOdometer || ''}`,
-    `Total: ${miles}`,
-    `Purpose: ${record.purpose || 'Work Travel'}`,
-    record.notes ? `Notes: ${record.notes}` : '',
-    stops ? `Stops:\n${stops}` : 'Stops: none'
-  ].filter(Boolean).join('\n');
-}
-
-function copyMileageSummary(record) {
-  const text = mileageSummaryText(record);
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text)
-      .then(() => setMileageStatus('Mileage summary copied.'))
-      .catch(() => setMileageStatus(text));
-    return;
-  }
-  setMileageStatus(text);
-}
-
-function jsonpRequest(url, params, timeoutMs = 12000) {
-  return new Promise((resolve, reject) => {
-    if (!url) {
-      reject(new Error('Backend URL not configured'));
-      return;
-    }
-    const callbackName = `vista_cb_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-    const query = new URLSearchParams({ ...params, callback: callbackName });
-    const requestUrl = `${url}${url.includes('?') ? '&' : '?'}${query.toString()}`;
-    if (requestUrl.length > 1800) {
-      reject(new Error('Mileage record is too large for starter backend request'));
-      return;
-    }
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('Backend save timed out'));
-    }, timeoutMs);
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[callbackName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    }
-    window[callbackName] = (response) => {
-      cleanup();
-      if (response && response.ok) {
-        resolve(response);
-      } else {
-        reject(new Error((response && response.error) || 'Backend save failed'));
-      }
-    };
-    script.onerror = () => {
-      cleanup();
-      reject(new Error('Backend request failed'));
-    };
-    script.src = requestUrl;
-    document.body.appendChild(script);
-  });
-}
-
-async function saveMileageToBackend(record) {
-  const payload = {
-    ...record,
-    user: 'Alysha',
-    source: 'VISTA v0.2.5'
-  };
-  const response = await jsonpRequest(VISTA_GAS_URL, {
-    action: 'saveMileage',
-    payload: JSON.stringify(payload)
-  });
-  return response;
-}
-
-function renderMileageLogs() {
-  const logs = mileageState.logs || [];
-  if (!logs.length) {
-    return '<div class="mileage-status">No saved mileage days yet.</div>';
-  }
-  return `
-    <div class="mileage-list">
-      <div class="mileage-list-title">Recent mileage</div>
-      ${logs.slice(0, 5).map(log => `
-        <div class="mileage-log">
-          <div>
-            <strong>${escapeHtml(log.date || '')}</strong> - ${escapeHtml(log.route || log.workArea || 'Mileage day')}
-            <small>${escapeHtml(log.vehicle || '')}${log.stops && log.stops.length ? ` - ${log.stops.length} stops` : ''}${log.saveStatus ? ` - ${escapeHtml(log.saveStatus)}` : ''}</small>
-          </div>
-          <div>${escapeHtml(String(log.totalMiles || 0))} mi</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function renderMileageModule() {
-  const session = mileageState.openSession;
-  if (!session) {
-    moduleBody.innerHTML = `
-      <div class="mileage-shell">
-        <div class="mileage-status" id="mileage-status">Start a work-day mileage session. Add route points as Alysha moves through the day.</div>
-        <div class="mileage-fields">
-          <div class="mileage-row">
-            <div class="mileage-field"><label>Date</label><input id="mileage-date" type="date" value="${mileageToday()}"></div>
-            <div class="mileage-field"><label>Vehicle</label><input id="mileage-vehicle" type="text" placeholder="Vehicle"></div>
-          </div>
-          <div class="mileage-field"><label>Work area</label><input id="mileage-work-area" type="text" placeholder="Austin / Hill Country / errands"></div>
-          <div class="mileage-field"><label>Property / route</label><input id="mileage-route" type="text" placeholder="Route, property, or service day"></div>
-          <div class="mileage-field"><label>Start odometer</label><input id="mileage-start" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0"></div>
-          <div class="mileage-field"><label>Purpose</label><input id="mileage-purpose" type="text" value="Work Travel"></div>
-          <div class="mileage-field"><label>Notes</label><textarea id="mileage-notes" placeholder="Optional notes"></textarea></div>
-        </div>
-        <div class="mileage-actions">
-          <button class="primary" id="mileage-start-btn" type="button">Start Mileage Day</button>
-        </div>
-        ${renderMileageLogs()}
-      </div>
-    `;
-    document.getElementById('mileage-start-btn').addEventListener('click', startMileageDay);
-    return;
-  }
-
-  const endPreview = getMileageValue('mileage-end') || session.endOdometer || mileageLastOdometer(session);
-  const previewMiles = mileageTotal(session.startOdometer, endPreview);
-  moduleBody.innerHTML = `
-    <div class="mileage-shell">
-      <div class="mileage-open-line">Open mileage day: ${escapeHtml(session.date)} - ${escapeHtml(session.vehicle)}</div>
-      <div class="mileage-total">${previewMiles === null ? '--' : escapeHtml(String(previewMiles))}<span>estimated miles</span></div>
-      <div class="mileage-status" id="mileage-status">Start ${escapeHtml(String(session.startOdometer))}${session.workArea ? ` - ${escapeHtml(session.workArea)}` : ''}</div>
-      <div class="mileage-fields">
-        <div class="mileage-row">
-          <div class="mileage-field"><label>Stop / point</label><input id="mileage-stop-label" type="text" placeholder="Property, errand, route point"></div>
-          <div class="mileage-field"><label>Odometer at stop</label><input id="mileage-stop-odo" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Optional"></div>
-        </div>
-        <div class="mileage-field"><label>Stop notes</label><input id="mileage-stop-notes" type="text" placeholder="Optional"></div>
-      </div>
-      <div class="mileage-actions">
-        <button id="mileage-add-stop-btn" type="button">Add Stop</button>
-      </div>
-      <div class="mileage-list">
-        <div class="mileage-list-title">Route points</div>
-        ${session.stops.length ? session.stops.map((stop, idx) => `
-          <div class="mileage-stop">
-            <div><strong>${idx + 1}. ${escapeHtml(stop.label || 'Stop')}</strong><small>${escapeHtml(stop.notes || '')}</small></div>
-            <div>${stop.odometer ? escapeHtml(String(stop.odometer)) : ''}</div>
-          </div>
-        `).join('') : '<div class="mileage-status">No stops added yet.</div>'}
-      </div>
-      <div class="mileage-fields">
-        <div class="mileage-field"><label>End odometer</label><input id="mileage-end" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Required to save"></div>
-        <div class="mileage-field"><label>End notes</label><textarea id="mileage-end-notes" placeholder="Optional close-out notes">${escapeHtml(session.notes || '')}</textarea></div>
-      </div>
-      <div class="mileage-actions">
-        <button class="primary" id="mileage-end-btn" type="button">End Day + Save</button>
-        <button id="mileage-copy-btn" type="button">Copy Summary</button>
-        <button class="danger" id="mileage-clear-btn" type="button">Clear Open Day</button>
-      </div>
-      ${renderMileageLogs()}
-    </div>
-  `;
-  document.getElementById('mileage-add-stop-btn').addEventListener('click', addMileageStop);
-  document.getElementById('mileage-end-btn').addEventListener('click', endMileageDay);
-  document.getElementById('mileage-copy-btn').addEventListener('click', () => copyMileageSummary(mileageState.openSession));
-  document.getElementById('mileage-clear-btn').addEventListener('click', clearMileageDay);
-  document.getElementById('mileage-end').addEventListener('input', () => {
-    const miles = mileageTotal(session.startOdometer, getMileageValue('mileage-end'));
-    const totalEl = document.querySelector('.mileage-total');
-    if (totalEl) totalEl.innerHTML = `${miles === null ? '--' : escapeHtml(String(miles))}<span>estimated miles</span>`;
-  });
-}
-
-function startMileageDay() {
-  const date = getMileageValue('mileage-date');
-  const vehicle = getMileageValue('mileage-vehicle');
-  const startOdometer = getMileageValue('mileage-start');
-  if (!date || !vehicle || !startOdometer) {
-    setMileageStatus('Date, vehicle, and start odometer are required.', true);
-    return;
-  }
-  if (mileageNumber(startOdometer) === null || mileageNumber(startOdometer) < 0) {
-    setMileageStatus('Start odometer needs a valid number.', true);
-    return;
-  }
-  mileageState.openSession = {
-    id: 'mileage-' + Date.now(),
-    date,
-    vehicle,
-    workArea: getMileageValue('mileage-work-area'),
-    route: getMileageValue('mileage-route'),
-    startOdometer,
-    purpose: getMileageValue('mileage-purpose') || 'Work Travel',
-    notes: getMileageValue('mileage-notes'),
-    stops: [],
-    startedAt: new Date().toISOString()
-  };
-  saveMileageState();
-  renderMileageModule();
-}
-
-function addMileageStop() {
-  const session = mileageState.openSession;
-  if (!session) return;
-  const label = getMileageValue('mileage-stop-label');
-  const odometer = getMileageValue('mileage-stop-odo');
-  const notes = getMileageValue('mileage-stop-notes');
-  if (!label && !odometer) {
-    setMileageStatus('Add a stop name or odometer reading.', true);
-    return;
-  }
-  if (odometer) {
-    const prev = mileageNumber(mileageLastOdometer(session));
-    const next = mileageNumber(odometer);
-    if (next === null || next < prev) {
-      setMileageStatus('Stop odometer is lower than the prior reading. Check the number.', true);
-      return;
-    }
-  }
-  session.stops.push({
-    id: 'stop-' + Date.now(),
-    label,
-    odometer,
-    notes,
-    addedAt: new Date().toISOString()
-  });
-  saveMileageState();
-  renderMileageModule();
-}
-
-function endMileageDay() {
-  const session = mileageState.openSession;
-  if (!session) return;
-  const endOdometer = getMileageValue('mileage-end');
-  const totalMiles = mileageTotal(session.startOdometer, endOdometer);
-  if (!endOdometer) {
-    setMileageStatus('End odometer is required to save.', true);
-    return;
-  }
-  if (totalMiles === null) {
-    setMileageStatus('End odometer is lower than start. Check the numbers.', true);
-    return;
-  }
-  const endNotes = getMileageValue('mileage-end-notes');
-  const record = {
-    ...session,
-    endOdometer,
-    totalMiles,
-    notes: endNotes || session.notes || '',
-    saveStatus: VISTA_GAS_URL ? 'saving' : 'local only',
-    completedAt: new Date().toISOString()
-  };
-  mileageState.logs = [record, ...(mileageState.logs || [])].slice(0, 50);
-  mileageState.openSession = null;
-  saveMileageState();
-  renderMileageModule();
-  if (!VISTA_GAS_URL) {
-    queueMileageSync(record, 'GAS URL not configured');
-    setMileageStatus(`Saved locally only: ${totalMiles} miles. Backend is not connected yet.`, true);
-    return;
-  }
-  setMileageStatus(`Saved locally. Sending ${totalMiles} miles to Sheet...`);
-  saveMileageToBackend(record)
-    .then(response => {
-      markMileageLogSync(record.id, 'saved to sheet', response.row || '');
-      renderMileageModule();
-      setMileageStatus(`Saved to Sheet: ${totalMiles} miles.`);
-    })
-    .catch(error => {
-      markMileageLogSync(record.id, 'local only');
-      queueMileageSync(record, error.message);
-      renderMileageModule();
-      setMileageStatus(`Saved locally only. Sheet save failed: ${error.message}`, true);
-    });
-}
-
-function clearMileageDay() {
-  if (!confirm('Clear the open mileage day?')) return;
-  mileageState.openSession = null;
-  saveMileageState();
-  renderMileageModule();
-}
-
-function openModuleScreen(key, options = {}) {
+function openModuleScreen(key) {
   const cfg = MODULE_COPY[key];
   if (!cfg) return;
 
-  if (!options.skipHistory && activeShellView && activeShellView !== key) {
-    shellHistory.push(activeShellView);
-  }
   activeShellView = key;
   homeScreen.classList.remove('open');
   moduleScreen.classList.add('open');
   moduleIcon.style.background = getModuleIconColor(cfg.tone);
-  moduleIcon.style.color = cfg.tone === 'clay' ? 'var(--vista-navy)' : 'white';
-  moduleIcon.innerHTML = `<i data-lucide="${cfg.icon}" data-fallback="${escapeHtml(cfg.fallback || '')}"></i>`;
+  moduleIcon.innerHTML = `<i data-lucide="${cfg.icon}"></i>`;
   moduleTitle.textContent = cfg.title;
   moduleKicker.textContent = cfg.kicker;
-  if (key === 'mileage') {
-    renderMileageModule();
-  } else if (key === 'issues') {
-    moduleBody.innerHTML = `
-      <div class="issues-tools">
-        <select class="issues-filter" id="issues-filter" aria-label="Filter issues">
-          <option value="Priority">Priority</option>
-          <option value="Urgent">Urgent</option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="All">All Tasks</option>
-          <option value="Issues">Property Issues</option>
-          <option value="Inspections">Inspections</option>
-          <option value="Cleaning">Cleaning</option>
-          <option value="Admin">Admin</option>
-        </select>
-        <input class="issues-search" id="issues-search" type="search" placeholder="Search task, property, assignee..." />
-        <div class="module-empty" id="issues-count">0 tasks</div>
-      </div>
-      <div class="issues-table-wrap">
-        <table class="issues-table">
-          <thead>
-            <tr>
-              <th>Priority</th>
-              <th>Due</th>
-              <th>Property</th>
-              <th>Task</th>
-              <th>Type</th>
-              <th>Assignee</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="issues-table-body"></tbody>
-        </table>
-      </div>
-    `;
-    document.getElementById('issues-filter').addEventListener('change', renderIssuesTable);
-    document.getElementById('issues-search').addEventListener('input', renderIssuesTable);
-    renderIssuesTable();
-  } else {
-    moduleBody.innerHTML = `
-      <div class="module-empty">${escapeHtml(cfg.body)}</div>
-      ${cfg.actions.length ? `<div class="module-action-list">
-        ${cfg.actions.map(action => `<button class="module-action-btn" type="button" data-action="${escapeHtml(action.action)}">${escapeHtml(action.label)}</button>`).join('')}
-      </div>` : ''}
-      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.5</div>' : ''}
-    `;
-  }
+  moduleBody.innerHTML = `
+    <div class="module-empty">${escapeHtml(cfg.body)}</div>
+    <div class="module-action-list">
+      ${cfg.actions.map(action => `<button class="module-action-btn" type="button" data-action="${escapeHtml(action.action)}">${escapeHtml(action.label)}</button>`).join('')}
+    </div>
+  `;
   moduleBody.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', () => runModuleAction(btn.dataset.action));
   });
-  updateBottomNav(key === 'more' ? 'more' : key === 'issues' ? 'issues' : null);
+  updateBottomNav(key === 'more' ? 'more' : null);
   refreshAppIcons();
 }
 
@@ -3753,7 +3009,7 @@ function renderHomeModules() {
   if (!homeModulesEl) return;
   homeModulesEl.innerHTML = HOME_MODULES.map(module => `
     <button class="module-tile ${escapeHtml(module.tone)}" type="button" data-module="${escapeHtml(module.key)}">
-      <span class="module-icon"><i data-lucide="${escapeHtml(module.icon)}" data-fallback="${escapeHtml(module.fallback)}"></i></span>
+      <span class="module-icon"><i data-lucide="${escapeHtml(module.icon)}"></i></span>
       <span>${escapeHtml(module.label)}</span>
     </button>
   `).join('');
@@ -3763,7 +3019,7 @@ function renderHomeModules() {
       if (key === 'map') {
         openShellMap('map', 'All Properties');
       } else if (key === 'issues') {
-        openModuleScreen('issues');
+        openShellMap('issues', 'Has Tasks');
       } else {
         openModuleScreen(key);
       }
@@ -3806,9 +3062,20 @@ adminUploadBtn.addEventListener('click', () => {
 
 uploadCloseBtn.addEventListener('click', closeUploadModal);
 uploadBackdrop.addEventListener('click', closeUploadModal);
+futureNotesBtn.addEventListener('click', () => {
+  if (futurePanel.classList.contains('open')) {
+    closeFutureModal();
+    return;
+  }
+  openFutureModal();
+});
+futureCloseBtn.addEventListener('click', closeFutureModal);
+futureBackdrop.addEventListener('click', closeFutureModal);
+
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') return;
   closeUploadModal();
+  closeFutureModal();
   filterPanel.classList.remove('open');
   updateFilterSummary();
 });
@@ -3858,7 +3125,7 @@ drawerCloseBtn.addEventListener('click', () => {
   document.getElementById('task-drawer').classList.remove('open');
 });
 
-moduleCloseBtn.addEventListener('click', openModuleBack);
+moduleCloseBtn.addEventListener('click', openShellHome);
 
 bottomNav.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-nav]');
@@ -3869,7 +3136,7 @@ bottomNav.addEventListener('click', (e) => {
   } else if (nav === 'map') {
     openShellMap('map', 'All Properties');
   } else if (nav === 'issues') {
-    openModuleScreen('issues');
+    openShellMap('issues', 'Has Tasks');
   } else if (nav === 'more') {
     openModuleScreen('more');
   }

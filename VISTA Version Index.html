@@ -208,6 +208,54 @@
       </thead>
       <tbody>
         <tr>
+          <td class="version">v0.2.5</td>
+          <td>Connected the deployed VISTA Apps Script web app URL so Mileage can attempt live saves to VISTA Data_LIVE instead of staying local-only. Test result: current deployment returns 403 / You need access, so Apps Script access must be changed to Anyone before live Sheet saves work. Keeps local fallback queue if the Sheet save fails.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.2.5.html">VISTA v0.2.5.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
+          <td class="version">v0.2.4</td>
+          <td>Added live backend storage starter. Created and verified Mileage, Notes, and Config tabs in VISTA Data_LIVE, added GAS/JSONP save adapter with local fallback queue and visible mileage save status. Backend requires deployed Apps Script web app URL before VISTA can write to the Sheet.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.2.4.html">VISTA v0.2.4.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
+          <td class="version">v0.2.3</td>
+          <td>Added Alysha-first Mileage starter with local Work Day session, vehicle/start odometer, multi-stop route points, end odometer save, calculated miles, recent local mileage log, and copyable summary. No GPS/backend sync yet.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.2.3.html">VISTA v0.2.3.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
+          <td class="version">v0.2.2</td>
+          <td>Streamlined the phone-app Home launcher by removing the outer card boxes around module buttons and enlarging the icon-first tap targets.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.2.2.html">VISTA v0.2.2.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
+          <td class="version">v0.2.1</td>
+          <td>Removed the in-app Future Updates button/modal, changed Issues from a map shortcut into a filterable task table, added module back-arrow navigation, and added a small Settings version number.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.2.1.html">VISTA v0.2.1.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
+          <td class="version">v0.2.0</td>
+          <td>Added provisional VISTA brand variables, reusable logo placeholder slots, branded app/home header treatment, and placeholder-safe icon fallbacks. No final logo assets were created.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.2.0.html">VISTA v0.2.0.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
+          <td class="version">v0.1.9</td>
+          <td>Added phone-app home screen with large module buttons and bottom navigation. Property Map keeps the existing map workflow, Issues opens the task-focused map filter, and More groups admin/reference shortcuts.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.1.9.html">VISTA v0.1.9.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
+          <td class="version">v0.1.8</td>
+          <td>Added safer Breezeway upload validation. CSV/XLSX imports now check required headers, preview row/match counts, show warnings/errors, and require Confirm Import before replacing the active task data.</td>
+          <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.1.8.html">VISTA v0.1.8.html</a></td>
+          <td><a class="button" href="https://wrsorensen.github.io/VISTA/VISTA%20Version%20Index.txt" download>Index TXT</a></td>
+        </tr>
+        <tr>
           <td class="version">v0.1.7</td>
           <td>Added compact Future Updates notes icon under Admin Upload in the VISTA header. Clicking it opens a simple modal with parked roadmap items for Alysha/demo follow-up.</td>
           <td><a class="file-link" href="https://wrsorensen.github.io/VISTA/VISTA%20v0.1.7.html">VISTA v0.1.7.html</a></td>
@@ -303,8 +351,9 @@
 
   <section class="tab-panel" id="future-panel">
     <ul class="future-list">
-      <li>Default view: decide whether first load should show All Properties, Has Tasks, or only higher-priority task properties.</li>
-      <li>Upload validation: reject files that do not match the required VISTA/Breezeway format.</li>
+      <li>Branding: swap placeholder slots with approved transparent PNG/SVG assets after Alysha approves final logo geometry.</li>
+      <li>Module buildout: turn placeholder modules into real workflows after Alysha confirms priority order.</li>
+      <li>Upload history/rollback: expose the prior successful local upload for restore before GAS storage is added.</li>
       <li>Backend import: accept the same rows and columns every upload until a smarter importer is intentionally built.</li>
       <li>Future AI import: add assisted column mapping for alternate Breezeway/report downloads, with preview and confirmation before import.</li>
       <li>Security: replace demo PIN with Google/multi-user login and admin-only upload rights.</li>

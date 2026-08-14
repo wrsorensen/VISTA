@@ -1,0 +1,50 @@
+VISTA Backend Setup Handoff
+Google Sheet: VISTA Data_LIVE
+Spreadsheet ID: 1hy0Bb7-GVVLFGnbtTiry99uSl3iaReKX2jRSCoL0K7k
+
+Status
+The Google Sheet backend structure is ready.
+Tabs created:
+- Mileage
+- Notes
+- Config
+
+The Apps Script web app URL has been received and added to VISTA v0.2.5.
+Mileage can now attempt live Sheet saves, but the current deployment is still blocked by Google access permissions.
+
+Setup Steps
+1. Open the Google Sheet.
+2. Go to Extensions > Apps Script.
+3. Name the Apps Script project: VISTA Data API.
+4. Paste the full contents of VISTA GAS Code.gs into Code.gs.
+5. Save.
+6. Run setupVistaSheets_ once from Apps Script.
+7. Approve the Google authorization prompts.
+8. Go to Deploy > New deployment.
+9. Choose Web app.
+10. Use these deployment settings:
+    Execute as: Me
+    Who has access: Anyone
+11. Deploy.
+12. Copy the Web app URL.
+13. Send that URL back to the VISTA build chat.
+
+Connected Web App URL
+https://script.google.com/macros/s/AKfycbzRY5uyn78gfhfgV92R-LyJHjYzAsM_Hs9WXpBo6j0zljsyzo0TYlmsZHRLgIHJjK2d/exec
+
+Expected Result
+Mileage saves should show Saved to Sheet instead of Saved locally only.
+
+Important
+Current URL test result: 403 / You need access.
+Fix in Apps Script deployment settings before using live:
+- Deploy > Manage deployments
+- Edit the Web app deployment
+- Who has access: Anyone
+- Deploy/Update
+
+If the Sheet save fails, VISTA keeps the mileage record locally and puts it in the backend sync queue.
+
+Backend Files
+- VISTA GAS Code.gs
+- VISTA Backend Setup Handoff.txt

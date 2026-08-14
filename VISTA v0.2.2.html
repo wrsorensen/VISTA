@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.5</title>
+<title>VISTA v0.2.2</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1471,151 +1471,6 @@
     background: #F7E9E5;
     color: var(--severity-urgent);
   }
-  .mileage-shell {
-    display: grid;
-    gap: 16px;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-  }
-  .mileage-status {
-    color: var(--ink-soft);
-    font-size: 12px;
-    line-height: 1.45;
-    min-height: 18px;
-  }
-  .mileage-open-line {
-    color: var(--navy-deep);
-    font-size: 13px;
-    font-weight: 800;
-    line-height: 1.35;
-  }
-  .mileage-fields {
-    display: grid;
-    gap: 11px;
-  }
-  .mileage-field label {
-    display: block;
-    color: var(--ink-soft);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-  .mileage-field input,
-  .mileage-field textarea {
-    width: 100%;
-    min-height: 42px;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    background: transparent;
-    color: var(--ink);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 15px;
-    padding: 8px 0;
-  }
-  .mileage-field textarea {
-    min-height: 72px;
-    resize: vertical;
-  }
-  .mileage-field input:focus,
-  .mileage-field textarea:focus {
-    outline: 0;
-    border-color: var(--vista-teal);
-  }
-  .mileage-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-  .mileage-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .mileage-actions button {
-    min-height: 42px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--navy);
-    cursor: pointer;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-    padding: 9px 12px;
-  }
-  .mileage-actions button.primary {
-    background: var(--navy);
-    border-color: var(--navy);
-    color: white;
-  }
-  .mileage-actions button.danger {
-    color: var(--severity-urgent);
-  }
-  .mileage-total {
-    color: var(--navy-deep);
-    font-family: Georgia, serif;
-    font-size: 28px;
-    font-weight: 800;
-    line-height: 1.1;
-  }
-  .mileage-total span {
-    display: block;
-    color: var(--ink-soft);
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    margin-top: 2px;
-    text-transform: uppercase;
-  }
-  .mileage-list {
-    display: grid;
-    gap: 8px;
-  }
-  .mileage-list-title {
-    color: var(--ink-soft);
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .mileage-stop,
-  .mileage-log {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px;
-    border-bottom: 1px solid var(--line);
-    padding: 8px 0;
-    color: var(--ink);
-    font-size: 13px;
-    line-height: 1.35;
-  }
-  .mileage-stop small,
-  .mileage-log small {
-    display: block;
-    color: var(--ink-soft);
-    font-size: 11px;
-    margin-top: 2px;
-  }
-  .mileage-copy {
-    width: 100%;
-    min-height: 40px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: transparent;
-    color: var(--navy);
-    cursor: pointer;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-  }
-  @media (max-width: 380px) {
-    .mileage-row {
-      grid-template-columns: 1fr;
-    }
-  }
   #bottom-nav {
     position: fixed;
     left: 50%;
@@ -1796,7 +1651,7 @@
       </div>
     </div>
     <div id="list"></div>
-    <div id="footer-note">v0.2.5</div>
+    <div id="footer-note">v0.2.2</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -1905,9 +1760,6 @@ let pendingTaskImport = null;
 let taskSummaryByIdx = new Map();
 
 const TASK_STORAGE_KEY = 'vista_task_upload_v1';
-const MILEAGE_STORAGE_KEY = 'vista_mileage_v1';
-const MILEAGE_SYNC_QUEUE_KEY = 'vista_mileage_sync_queue_v1';
-const VISTA_GAS_URL = 'https://script.google.com/macros/s/AKfycbzRY5uyn78gfhfgV92R-LyJHjYzAsM_Hs9WXpBo6j0zljsyzo0TYlmsZHRLgIHJjK2d/exec';
 const ADMIN_UPLOAD_PIN = '1111';
 const TASK_REQUIRED_HEADER_GROUPS = [
   { label: 'Property', candidates: ['Property', 'Property Name', 'Listing', 'Home', 'Unit'] },
@@ -1967,12 +1819,12 @@ const MODULE_COPY = {
   },
   mileage: {
     title: 'Mileage',
-    kicker: 'Work day route',
+    kicker: 'Field visits',
     icon: 'car',
     fallback: 'Mi',
     tone: 'clay',
-    body: '',
-    actions: []
+    body: 'Start Day, Arrived, Add Stop, and End Day will be built after phone GPS behavior is tested.',
+    actions: [{ label: 'Open Property Map', action: 'map' }]
   },
   notes: {
     title: 'Notes',
@@ -3293,392 +3145,6 @@ function renderIssuesTable() {
   }
 }
 
-function mileageToday() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-function loadMileageState() {
-  const fallback = { openSession: null, logs: [] };
-  try {
-    const saved = localStorage.getItem(MILEAGE_STORAGE_KEY);
-    if (!saved) return fallback;
-    const parsed = JSON.parse(saved);
-    return {
-      openSession: parsed.openSession || null,
-      logs: Array.isArray(parsed.logs) ? parsed.logs : []
-    };
-  } catch (e) {
-    return fallback;
-  }
-}
-
-let mileageState = loadMileageState();
-
-function saveMileageState() {
-  localStorage.setItem(MILEAGE_STORAGE_KEY, JSON.stringify(mileageState));
-}
-
-function loadMileageQueue() {
-  try {
-    const saved = localStorage.getItem(MILEAGE_SYNC_QUEUE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveMileageQueue(queue) {
-  localStorage.setItem(MILEAGE_SYNC_QUEUE_KEY, JSON.stringify(queue));
-}
-
-function queueMileageSync(record, reason) {
-  const queue = loadMileageQueue();
-  queue.unshift({
-    id: record.id,
-    record,
-    reason: reason || 'Backend not connected',
-    queuedAt: new Date().toISOString()
-  });
-  saveMileageQueue(queue.slice(0, 100));
-}
-
-function markMileageLogSync(id, status, sheetRow) {
-  mileageState.logs = (mileageState.logs || []).map(log => {
-    if (log.id !== id) return log;
-    return {
-      ...log,
-      saveStatus: status,
-      sheetRow: sheetRow || log.sheetRow || '',
-      updatedAt: new Date().toISOString()
-    };
-  });
-  saveMileageState();
-}
-
-function mileageNumber(value) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-}
-
-function mileageTotal(startOdometer, endOdometer) {
-  const start = mileageNumber(startOdometer);
-  const end = mileageNumber(endOdometer);
-  if (start === null || end === null || end < start) return null;
-  return Math.round((end - start) * 10) / 10;
-}
-
-function getMileageValue(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-
-function setMileageStatus(message, isError = false) {
-  const el = document.getElementById('mileage-status');
-  if (!el) return;
-  el.textContent = message || '';
-  el.style.color = isError ? 'var(--severity-urgent)' : 'var(--ink-soft)';
-}
-
-function mileageLastOdometer(session) {
-  const stops = (session && session.stops) || [];
-  for (let i = stops.length - 1; i >= 0; i--) {
-    if (mileageNumber(stops[i].odometer) !== null) return stops[i].odometer;
-  }
-  return session ? session.startOdometer : '';
-}
-
-function mileageSummaryText(record) {
-  const stops = (record.stops || [])
-    .map((stop, idx) => `${idx + 1}. ${stop.label || 'Stop'}${stop.odometer ? ` @ ${stop.odometer}` : ''}${stop.notes ? ` - ${stop.notes}` : ''}`)
-    .join('\n');
-  const miles = record.totalMiles !== undefined && record.totalMiles !== null
-    ? `${record.totalMiles} miles`
-    : 'Mileage day open';
-  return [
-    `VISTA Mileage - ${record.date || mileageToday()}`,
-    `Vehicle: ${record.vehicle || ''}`,
-    `Work area: ${record.workArea || ''}`,
-    `Route/property: ${record.route || ''}`,
-    `Start odometer: ${record.startOdometer || ''}`,
-    `End odometer: ${record.endOdometer || ''}`,
-    `Total: ${miles}`,
-    `Purpose: ${record.purpose || 'Work Travel'}`,
-    record.notes ? `Notes: ${record.notes}` : '',
-    stops ? `Stops:\n${stops}` : 'Stops: none'
-  ].filter(Boolean).join('\n');
-}
-
-function copyMileageSummary(record) {
-  const text = mileageSummaryText(record);
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text)
-      .then(() => setMileageStatus('Mileage summary copied.'))
-      .catch(() => setMileageStatus(text));
-    return;
-  }
-  setMileageStatus(text);
-}
-
-function jsonpRequest(url, params, timeoutMs = 12000) {
-  return new Promise((resolve, reject) => {
-    if (!url) {
-      reject(new Error('Backend URL not configured'));
-      return;
-    }
-    const callbackName = `vista_cb_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-    const query = new URLSearchParams({ ...params, callback: callbackName });
-    const requestUrl = `${url}${url.includes('?') ? '&' : '?'}${query.toString()}`;
-    if (requestUrl.length > 1800) {
-      reject(new Error('Mileage record is too large for starter backend request'));
-      return;
-    }
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('Backend save timed out'));
-    }, timeoutMs);
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[callbackName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    }
-    window[callbackName] = (response) => {
-      cleanup();
-      if (response && response.ok) {
-        resolve(response);
-      } else {
-        reject(new Error((response && response.error) || 'Backend save failed'));
-      }
-    };
-    script.onerror = () => {
-      cleanup();
-      reject(new Error('Backend request failed'));
-    };
-    script.src = requestUrl;
-    document.body.appendChild(script);
-  });
-}
-
-async function saveMileageToBackend(record) {
-  const payload = {
-    ...record,
-    user: 'Alysha',
-    source: 'VISTA v0.2.5'
-  };
-  const response = await jsonpRequest(VISTA_GAS_URL, {
-    action: 'saveMileage',
-    payload: JSON.stringify(payload)
-  });
-  return response;
-}
-
-function renderMileageLogs() {
-  const logs = mileageState.logs || [];
-  if (!logs.length) {
-    return '<div class="mileage-status">No saved mileage days yet.</div>';
-  }
-  return `
-    <div class="mileage-list">
-      <div class="mileage-list-title">Recent mileage</div>
-      ${logs.slice(0, 5).map(log => `
-        <div class="mileage-log">
-          <div>
-            <strong>${escapeHtml(log.date || '')}</strong> - ${escapeHtml(log.route || log.workArea || 'Mileage day')}
-            <small>${escapeHtml(log.vehicle || '')}${log.stops && log.stops.length ? ` - ${log.stops.length} stops` : ''}${log.saveStatus ? ` - ${escapeHtml(log.saveStatus)}` : ''}</small>
-          </div>
-          <div>${escapeHtml(String(log.totalMiles || 0))} mi</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-}
-
-function renderMileageModule() {
-  const session = mileageState.openSession;
-  if (!session) {
-    moduleBody.innerHTML = `
-      <div class="mileage-shell">
-        <div class="mileage-status" id="mileage-status">Start a work-day mileage session. Add route points as Alysha moves through the day.</div>
-        <div class="mileage-fields">
-          <div class="mileage-row">
-            <div class="mileage-field"><label>Date</label><input id="mileage-date" type="date" value="${mileageToday()}"></div>
-            <div class="mileage-field"><label>Vehicle</label><input id="mileage-vehicle" type="text" placeholder="Vehicle"></div>
-          </div>
-          <div class="mileage-field"><label>Work area</label><input id="mileage-work-area" type="text" placeholder="Austin / Hill Country / errands"></div>
-          <div class="mileage-field"><label>Property / route</label><input id="mileage-route" type="text" placeholder="Route, property, or service day"></div>
-          <div class="mileage-field"><label>Start odometer</label><input id="mileage-start" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0"></div>
-          <div class="mileage-field"><label>Purpose</label><input id="mileage-purpose" type="text" value="Work Travel"></div>
-          <div class="mileage-field"><label>Notes</label><textarea id="mileage-notes" placeholder="Optional notes"></textarea></div>
-        </div>
-        <div class="mileage-actions">
-          <button class="primary" id="mileage-start-btn" type="button">Start Mileage Day</button>
-        </div>
-        ${renderMileageLogs()}
-      </div>
-    `;
-    document.getElementById('mileage-start-btn').addEventListener('click', startMileageDay);
-    return;
-  }
-
-  const endPreview = getMileageValue('mileage-end') || session.endOdometer || mileageLastOdometer(session);
-  const previewMiles = mileageTotal(session.startOdometer, endPreview);
-  moduleBody.innerHTML = `
-    <div class="mileage-shell">
-      <div class="mileage-open-line">Open mileage day: ${escapeHtml(session.date)} - ${escapeHtml(session.vehicle)}</div>
-      <div class="mileage-total">${previewMiles === null ? '--' : escapeHtml(String(previewMiles))}<span>estimated miles</span></div>
-      <div class="mileage-status" id="mileage-status">Start ${escapeHtml(String(session.startOdometer))}${session.workArea ? ` - ${escapeHtml(session.workArea)}` : ''}</div>
-      <div class="mileage-fields">
-        <div class="mileage-row">
-          <div class="mileage-field"><label>Stop / point</label><input id="mileage-stop-label" type="text" placeholder="Property, errand, route point"></div>
-          <div class="mileage-field"><label>Odometer at stop</label><input id="mileage-stop-odo" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Optional"></div>
-        </div>
-        <div class="mileage-field"><label>Stop notes</label><input id="mileage-stop-notes" type="text" placeholder="Optional"></div>
-      </div>
-      <div class="mileage-actions">
-        <button id="mileage-add-stop-btn" type="button">Add Stop</button>
-      </div>
-      <div class="mileage-list">
-        <div class="mileage-list-title">Route points</div>
-        ${session.stops.length ? session.stops.map((stop, idx) => `
-          <div class="mileage-stop">
-            <div><strong>${idx + 1}. ${escapeHtml(stop.label || 'Stop')}</strong><small>${escapeHtml(stop.notes || '')}</small></div>
-            <div>${stop.odometer ? escapeHtml(String(stop.odometer)) : ''}</div>
-          </div>
-        `).join('') : '<div class="mileage-status">No stops added yet.</div>'}
-      </div>
-      <div class="mileage-fields">
-        <div class="mileage-field"><label>End odometer</label><input id="mileage-end" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Required to save"></div>
-        <div class="mileage-field"><label>End notes</label><textarea id="mileage-end-notes" placeholder="Optional close-out notes">${escapeHtml(session.notes || '')}</textarea></div>
-      </div>
-      <div class="mileage-actions">
-        <button class="primary" id="mileage-end-btn" type="button">End Day + Save</button>
-        <button id="mileage-copy-btn" type="button">Copy Summary</button>
-        <button class="danger" id="mileage-clear-btn" type="button">Clear Open Day</button>
-      </div>
-      ${renderMileageLogs()}
-    </div>
-  `;
-  document.getElementById('mileage-add-stop-btn').addEventListener('click', addMileageStop);
-  document.getElementById('mileage-end-btn').addEventListener('click', endMileageDay);
-  document.getElementById('mileage-copy-btn').addEventListener('click', () => copyMileageSummary(mileageState.openSession));
-  document.getElementById('mileage-clear-btn').addEventListener('click', clearMileageDay);
-  document.getElementById('mileage-end').addEventListener('input', () => {
-    const miles = mileageTotal(session.startOdometer, getMileageValue('mileage-end'));
-    const totalEl = document.querySelector('.mileage-total');
-    if (totalEl) totalEl.innerHTML = `${miles === null ? '--' : escapeHtml(String(miles))}<span>estimated miles</span>`;
-  });
-}
-
-function startMileageDay() {
-  const date = getMileageValue('mileage-date');
-  const vehicle = getMileageValue('mileage-vehicle');
-  const startOdometer = getMileageValue('mileage-start');
-  if (!date || !vehicle || !startOdometer) {
-    setMileageStatus('Date, vehicle, and start odometer are required.', true);
-    return;
-  }
-  if (mileageNumber(startOdometer) === null || mileageNumber(startOdometer) < 0) {
-    setMileageStatus('Start odometer needs a valid number.', true);
-    return;
-  }
-  mileageState.openSession = {
-    id: 'mileage-' + Date.now(),
-    date,
-    vehicle,
-    workArea: getMileageValue('mileage-work-area'),
-    route: getMileageValue('mileage-route'),
-    startOdometer,
-    purpose: getMileageValue('mileage-purpose') || 'Work Travel',
-    notes: getMileageValue('mileage-notes'),
-    stops: [],
-    startedAt: new Date().toISOString()
-  };
-  saveMileageState();
-  renderMileageModule();
-}
-
-function addMileageStop() {
-  const session = mileageState.openSession;
-  if (!session) return;
-  const label = getMileageValue('mileage-stop-label');
-  const odometer = getMileageValue('mileage-stop-odo');
-  const notes = getMileageValue('mileage-stop-notes');
-  if (!label && !odometer) {
-    setMileageStatus('Add a stop name or odometer reading.', true);
-    return;
-  }
-  if (odometer) {
-    const prev = mileageNumber(mileageLastOdometer(session));
-    const next = mileageNumber(odometer);
-    if (next === null || next < prev) {
-      setMileageStatus('Stop odometer is lower than the prior reading. Check the number.', true);
-      return;
-    }
-  }
-  session.stops.push({
-    id: 'stop-' + Date.now(),
-    label,
-    odometer,
-    notes,
-    addedAt: new Date().toISOString()
-  });
-  saveMileageState();
-  renderMileageModule();
-}
-
-function endMileageDay() {
-  const session = mileageState.openSession;
-  if (!session) return;
-  const endOdometer = getMileageValue('mileage-end');
-  const totalMiles = mileageTotal(session.startOdometer, endOdometer);
-  if (!endOdometer) {
-    setMileageStatus('End odometer is required to save.', true);
-    return;
-  }
-  if (totalMiles === null) {
-    setMileageStatus('End odometer is lower than start. Check the numbers.', true);
-    return;
-  }
-  const endNotes = getMileageValue('mileage-end-notes');
-  const record = {
-    ...session,
-    endOdometer,
-    totalMiles,
-    notes: endNotes || session.notes || '',
-    saveStatus: VISTA_GAS_URL ? 'saving' : 'local only',
-    completedAt: new Date().toISOString()
-  };
-  mileageState.logs = [record, ...(mileageState.logs || [])].slice(0, 50);
-  mileageState.openSession = null;
-  saveMileageState();
-  renderMileageModule();
-  if (!VISTA_GAS_URL) {
-    queueMileageSync(record, 'GAS URL not configured');
-    setMileageStatus(`Saved locally only: ${totalMiles} miles. Backend is not connected yet.`, true);
-    return;
-  }
-  setMileageStatus(`Saved locally. Sending ${totalMiles} miles to Sheet...`);
-  saveMileageToBackend(record)
-    .then(response => {
-      markMileageLogSync(record.id, 'saved to sheet', response.row || '');
-      renderMileageModule();
-      setMileageStatus(`Saved to Sheet: ${totalMiles} miles.`);
-    })
-    .catch(error => {
-      markMileageLogSync(record.id, 'local only');
-      queueMileageSync(record, error.message);
-      renderMileageModule();
-      setMileageStatus(`Saved locally only. Sheet save failed: ${error.message}`, true);
-    });
-}
-
-function clearMileageDay() {
-  if (!confirm('Clear the open mileage day?')) return;
-  mileageState.openSession = null;
-  saveMileageState();
-  renderMileageModule();
-}
-
 function openModuleScreen(key, options = {}) {
   const cfg = MODULE_COPY[key];
   if (!cfg) return;
@@ -3694,9 +3160,7 @@ function openModuleScreen(key, options = {}) {
   moduleIcon.innerHTML = `<i data-lucide="${cfg.icon}" data-fallback="${escapeHtml(cfg.fallback || '')}"></i>`;
   moduleTitle.textContent = cfg.title;
   moduleKicker.textContent = cfg.kicker;
-  if (key === 'mileage') {
-    renderMileageModule();
-  } else if (key === 'issues') {
+  if (key === 'issues') {
     moduleBody.innerHTML = `
       <div class="issues-tools">
         <select class="issues-filter" id="issues-filter" aria-label="Filter issues">
@@ -3739,7 +3203,7 @@ function openModuleScreen(key, options = {}) {
       ${cfg.actions.length ? `<div class="module-action-list">
         ${cfg.actions.map(action => `<button class="module-action-btn" type="button" data-action="${escapeHtml(action.action)}">${escapeHtml(action.label)}</button>`).join('')}
       </div>` : ''}
-      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.5</div>' : ''}
+      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.2</div>' : ''}
     `;
   }
   moduleBody.querySelectorAll('[data-action]').forEach(btn => {

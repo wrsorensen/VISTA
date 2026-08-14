@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.5</title>
+<title>VISTA v0.2.4</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1796,7 +1796,7 @@
       </div>
     </div>
     <div id="list"></div>
-    <div id="footer-note">v0.2.5</div>
+    <div id="footer-note">v0.2.4</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -1907,7 +1907,7 @@ let taskSummaryByIdx = new Map();
 const TASK_STORAGE_KEY = 'vista_task_upload_v1';
 const MILEAGE_STORAGE_KEY = 'vista_mileage_v1';
 const MILEAGE_SYNC_QUEUE_KEY = 'vista_mileage_sync_queue_v1';
-const VISTA_GAS_URL = 'https://script.google.com/macros/s/AKfycbzRY5uyn78gfhfgV92R-LyJHjYzAsM_Hs9WXpBo6j0zljsyzo0TYlmsZHRLgIHJjK2d/exec';
+const VISTA_GAS_URL = '';
 const ADMIN_UPLOAD_PIN = '1111';
 const TASK_REQUIRED_HEADER_GROUPS = [
   { label: 'Property', candidates: ['Property', 'Property Name', 'Listing', 'Home', 'Unit'] },
@@ -3463,7 +3463,7 @@ async function saveMileageToBackend(record) {
   const payload = {
     ...record,
     user: 'Alysha',
-    source: 'VISTA v0.2.5'
+    source: 'VISTA v0.2.4'
   };
   const response = await jsonpRequest(VISTA_GAS_URL, {
     action: 'saveMileage',
@@ -3739,7 +3739,7 @@ function openModuleScreen(key, options = {}) {
       ${cfg.actions.length ? `<div class="module-action-list">
         ${cfg.actions.map(action => `<button class="module-action-btn" type="button" data-action="${escapeHtml(action.action)}">${escapeHtml(action.label)}</button>`).join('')}
       </div>` : ''}
-      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.5</div>' : ''}
+      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.4</div>' : ''}
     `;
   }
   moduleBody.querySelectorAll('[data-action]').forEach(btn => {

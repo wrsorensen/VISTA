@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.5</title>
+<title>VISTA v0.2.3</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1796,7 +1796,7 @@
       </div>
     </div>
     <div id="list"></div>
-    <div id="footer-note">v0.2.5</div>
+    <div id="footer-note">v0.2.3</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -1906,8 +1906,6 @@ let taskSummaryByIdx = new Map();
 
 const TASK_STORAGE_KEY = 'vista_task_upload_v1';
 const MILEAGE_STORAGE_KEY = 'vista_mileage_v1';
-const MILEAGE_SYNC_QUEUE_KEY = 'vista_mileage_sync_queue_v1';
-const VISTA_GAS_URL = 'https://script.google.com/macros/s/AKfycbzRY5uyn78gfhfgV92R-LyJHjYzAsM_Hs9WXpBo6j0zljsyzo0TYlmsZHRLgIHJjK2d/exec';
 const ADMIN_UPLOAD_PIN = '1111';
 const TASK_REQUIRED_HEADER_GROUPS = [
   { label: 'Property', candidates: ['Property', 'Property Name', 'Listing', 'Home', 'Unit'] },
@@ -3318,43 +3316,6 @@ function saveMileageState() {
   localStorage.setItem(MILEAGE_STORAGE_KEY, JSON.stringify(mileageState));
 }
 
-function loadMileageQueue() {
-  try {
-    const saved = localStorage.getItem(MILEAGE_SYNC_QUEUE_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch (e) {
-    return [];
-  }
-}
-
-function saveMileageQueue(queue) {
-  localStorage.setItem(MILEAGE_SYNC_QUEUE_KEY, JSON.stringify(queue));
-}
-
-function queueMileageSync(record, reason) {
-  const queue = loadMileageQueue();
-  queue.unshift({
-    id: record.id,
-    record,
-    reason: reason || 'Backend not connected',
-    queuedAt: new Date().toISOString()
-  });
-  saveMileageQueue(queue.slice(0, 100));
-}
-
-function markMileageLogSync(id, status, sheetRow) {
-  mileageState.logs = (mileageState.logs || []).map(log => {
-    if (log.id !== id) return log;
-    return {
-      ...log,
-      saveStatus: status,
-      sheetRow: sheetRow || log.sheetRow || '',
-      updatedAt: new Date().toISOString()
-    };
-  });
-  saveMileageState();
-}
-
 function mileageNumber(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
@@ -3419,59 +3380,6 @@ function copyMileageSummary(record) {
   setMileageStatus(text);
 }
 
-function jsonpRequest(url, params, timeoutMs = 12000) {
-  return new Promise((resolve, reject) => {
-    if (!url) {
-      reject(new Error('Backend URL not configured'));
-      return;
-    }
-    const callbackName = `vista_cb_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
-    const query = new URLSearchParams({ ...params, callback: callbackName });
-    const requestUrl = `${url}${url.includes('?') ? '&' : '?'}${query.toString()}`;
-    if (requestUrl.length > 1800) {
-      reject(new Error('Mileage record is too large for starter backend request'));
-      return;
-    }
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('Backend save timed out'));
-    }, timeoutMs);
-    function cleanup() {
-      clearTimeout(timer);
-      delete window[callbackName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    }
-    window[callbackName] = (response) => {
-      cleanup();
-      if (response && response.ok) {
-        resolve(response);
-      } else {
-        reject(new Error((response && response.error) || 'Backend save failed'));
-      }
-    };
-    script.onerror = () => {
-      cleanup();
-      reject(new Error('Backend request failed'));
-    };
-    script.src = requestUrl;
-    document.body.appendChild(script);
-  });
-}
-
-async function saveMileageToBackend(record) {
-  const payload = {
-    ...record,
-    user: 'Alysha',
-    source: 'VISTA v0.2.5'
-  };
-  const response = await jsonpRequest(VISTA_GAS_URL, {
-    action: 'saveMileage',
-    payload: JSON.stringify(payload)
-  });
-  return response;
-}
-
 function renderMileageLogs() {
   const logs = mileageState.logs || [];
   if (!logs.length) {
@@ -3484,7 +3392,7 @@ function renderMileageLogs() {
         <div class="mileage-log">
           <div>
             <strong>${escapeHtml(log.date || '')}</strong> - ${escapeHtml(log.route || log.workArea || 'Mileage day')}
-            <small>${escapeHtml(log.vehicle || '')}${log.stops && log.stops.length ? ` - ${log.stops.length} stops` : ''}${log.saveStatus ? ` - ${escapeHtml(log.saveStatus)}` : ''}</small>
+            <small>${escapeHtml(log.vehicle || '')}${log.stops && log.stops.length ? ` - ${log.stops.length} stops` : ''}</small>
           </div>
           <div>${escapeHtml(String(log.totalMiles || 0))} mi</div>
         </div>
@@ -3645,31 +3553,13 @@ function endMileageDay() {
     endOdometer,
     totalMiles,
     notes: endNotes || session.notes || '',
-    saveStatus: VISTA_GAS_URL ? 'saving' : 'local only',
     completedAt: new Date().toISOString()
   };
   mileageState.logs = [record, ...(mileageState.logs || [])].slice(0, 50);
   mileageState.openSession = null;
   saveMileageState();
   renderMileageModule();
-  if (!VISTA_GAS_URL) {
-    queueMileageSync(record, 'GAS URL not configured');
-    setMileageStatus(`Saved locally only: ${totalMiles} miles. Backend is not connected yet.`, true);
-    return;
-  }
-  setMileageStatus(`Saved locally. Sending ${totalMiles} miles to Sheet...`);
-  saveMileageToBackend(record)
-    .then(response => {
-      markMileageLogSync(record.id, 'saved to sheet', response.row || '');
-      renderMileageModule();
-      setMileageStatus(`Saved to Sheet: ${totalMiles} miles.`);
-    })
-    .catch(error => {
-      markMileageLogSync(record.id, 'local only');
-      queueMileageSync(record, error.message);
-      renderMileageModule();
-      setMileageStatus(`Saved locally only. Sheet save failed: ${error.message}`, true);
-    });
+  setMileageStatus(`Saved ${totalMiles} miles.`);
 }
 
 function clearMileageDay() {
@@ -3739,7 +3629,7 @@ function openModuleScreen(key, options = {}) {
       ${cfg.actions.length ? `<div class="module-action-list">
         ${cfg.actions.map(action => `<button class="module-action-btn" type="button" data-action="${escapeHtml(action.action)}">${escapeHtml(action.label)}</button>`).join('')}
       </div>` : ''}
-      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.5</div>' : ''}
+      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.3</div>' : ''}
     `;
   }
   moduleBody.querySelectorAll('[data-action]').forEach(btn => {
