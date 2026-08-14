@@ -1,0 +1,39 @@
+VISTA Mileage Cleanup Notes
+
+Decision
+Simplify Mileage for Alysha's personal use.
+
+Implemented
+VISTA v0.2.6
+
+Remove from app UI:
+- Vehicle
+- Work area
+- Property / route
+
+Keep:
+- Date
+- Start odometer
+- Stops
+- End odometer
+- Notes optional
+
+Trip identity:
+- Use date + miles.
+- Do not require a trip label.
+
+Example trip:
+- Start odometer at office
+- Stop 1: Property 1
+- Stop 2: Property 2
+- Stop 3: Office
+- End odometer
+- Optional note: Checked inspection process
+
+Saved display target:
+- Aug 13 - 22.4 miles
+- 3 stops - saved to sheet
+- Show notes only if she added notes.
+
+Sheet note:
+Existing backend columns can stay for now. UI can stop filling Vehicle, Work Area, and Route / Property.

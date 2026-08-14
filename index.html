@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.5</title>
+<title>VISTA v0.2.6</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1796,7 +1796,7 @@
       </div>
     </div>
     <div id="list"></div>
-    <div id="footer-note">v0.2.5</div>
+    <div id="footer-note">v0.2.6</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -1967,7 +1967,7 @@ const MODULE_COPY = {
   },
   mileage: {
     title: 'Mileage',
-    kicker: 'Work day route',
+    kicker: 'Mileage log',
     icon: 'car',
     fallback: 'Mi',
     tone: 'clay',
@@ -3297,6 +3297,18 @@ function mileageToday() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function mileageDisplayDate(value) {
+  const raw = String(value || '').slice(0, 10);
+  const parts = raw.split('-').map(Number);
+  if (parts.length === 3 && parts.every(Number.isFinite)) {
+    return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+  return raw || 'Mileage day';
+}
+
 function loadMileageState() {
   const fallback = { openSession: null, logs: [] };
   try {
@@ -3396,13 +3408,9 @@ function mileageSummaryText(record) {
     : 'Mileage day open';
   return [
     `VISTA Mileage - ${record.date || mileageToday()}`,
-    `Vehicle: ${record.vehicle || ''}`,
-    `Work area: ${record.workArea || ''}`,
-    `Route/property: ${record.route || ''}`,
     `Start odometer: ${record.startOdometer || ''}`,
     `End odometer: ${record.endOdometer || ''}`,
     `Total: ${miles}`,
-    `Purpose: ${record.purpose || 'Work Travel'}`,
     record.notes ? `Notes: ${record.notes}` : '',
     stops ? `Stops:\n${stops}` : 'Stops: none'
   ].filter(Boolean).join('\n');
@@ -3463,7 +3471,7 @@ async function saveMileageToBackend(record) {
   const payload = {
     ...record,
     user: 'Alysha',
-    source: 'VISTA v0.2.5'
+    source: 'VISTA v0.2.6'
   };
   const response = await jsonpRequest(VISTA_GAS_URL, {
     action: 'saveMileage',
@@ -3483,10 +3491,10 @@ function renderMileageLogs() {
       ${logs.slice(0, 5).map(log => `
         <div class="mileage-log">
           <div>
-            <strong>${escapeHtml(log.date || '')}</strong> - ${escapeHtml(log.route || log.workArea || 'Mileage day')}
-            <small>${escapeHtml(log.vehicle || '')}${log.stops && log.stops.length ? ` - ${log.stops.length} stops` : ''}${log.saveStatus ? ` - ${escapeHtml(log.saveStatus)}` : ''}</small>
+            <strong>${escapeHtml(mileageDisplayDate(log.date))}</strong> - ${escapeHtml(String(log.totalMiles || 0))} miles
+            <small>${log.stops && log.stops.length ? `${log.stops.length} stops` : 'No stops'}${log.saveStatus ? ` - ${escapeHtml(log.saveStatus)}` : ''}${log.notes ? ` - ${escapeHtml(log.notes)}` : ''}</small>
           </div>
-          <div>${escapeHtml(String(log.totalMiles || 0))} mi</div>
+          <div></div>
         </div>
       `).join('')}
     </div>
@@ -3498,16 +3506,12 @@ function renderMileageModule() {
   if (!session) {
     moduleBody.innerHTML = `
       <div class="mileage-shell">
-        <div class="mileage-status" id="mileage-status">Start a work-day mileage session. Add route points as Alysha moves through the day.</div>
+        <div class="mileage-status" id="mileage-status">Start with the date and odometer. Add stops as Alysha moves through the day.</div>
         <div class="mileage-fields">
           <div class="mileage-row">
             <div class="mileage-field"><label>Date</label><input id="mileage-date" type="date" value="${mileageToday()}"></div>
-            <div class="mileage-field"><label>Vehicle</label><input id="mileage-vehicle" type="text" placeholder="Vehicle"></div>
+            <div class="mileage-field"><label>Start odometer</label><input id="mileage-start" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0"></div>
           </div>
-          <div class="mileage-field"><label>Work area</label><input id="mileage-work-area" type="text" placeholder="Austin / Hill Country / errands"></div>
-          <div class="mileage-field"><label>Property / route</label><input id="mileage-route" type="text" placeholder="Route, property, or service day"></div>
-          <div class="mileage-field"><label>Start odometer</label><input id="mileage-start" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0"></div>
-          <div class="mileage-field"><label>Purpose</label><input id="mileage-purpose" type="text" value="Work Travel"></div>
           <div class="mileage-field"><label>Notes</label><textarea id="mileage-notes" placeholder="Optional notes"></textarea></div>
         </div>
         <div class="mileage-actions">
@@ -3524,9 +3528,9 @@ function renderMileageModule() {
   const previewMiles = mileageTotal(session.startOdometer, endPreview);
   moduleBody.innerHTML = `
     <div class="mileage-shell">
-      <div class="mileage-open-line">Open mileage day: ${escapeHtml(session.date)} - ${escapeHtml(session.vehicle)}</div>
+      <div class="mileage-open-line">Open mileage day: ${escapeHtml(mileageDisplayDate(session.date))}</div>
       <div class="mileage-total">${previewMiles === null ? '--' : escapeHtml(String(previewMiles))}<span>estimated miles</span></div>
-      <div class="mileage-status" id="mileage-status">Start ${escapeHtml(String(session.startOdometer))}${session.workArea ? ` - ${escapeHtml(session.workArea)}` : ''}</div>
+      <div class="mileage-status" id="mileage-status">Start odometer: ${escapeHtml(String(session.startOdometer))}</div>
       <div class="mileage-fields">
         <div class="mileage-row">
           <div class="mileage-field"><label>Stop / point</label><input id="mileage-stop-label" type="text" placeholder="Property, errand, route point"></div>
@@ -3571,10 +3575,9 @@ function renderMileageModule() {
 
 function startMileageDay() {
   const date = getMileageValue('mileage-date');
-  const vehicle = getMileageValue('mileage-vehicle');
   const startOdometer = getMileageValue('mileage-start');
-  if (!date || !vehicle || !startOdometer) {
-    setMileageStatus('Date, vehicle, and start odometer are required.', true);
+  if (!date || !startOdometer) {
+    setMileageStatus('Date and start odometer are required.', true);
     return;
   }
   if (mileageNumber(startOdometer) === null || mileageNumber(startOdometer) < 0) {
@@ -3584,11 +3587,11 @@ function startMileageDay() {
   mileageState.openSession = {
     id: 'mileage-' + Date.now(),
     date,
-    vehicle,
-    workArea: getMileageValue('mileage-work-area'),
-    route: getMileageValue('mileage-route'),
+    vehicle: '',
+    workArea: '',
+    route: '',
     startOdometer,
-    purpose: getMileageValue('mileage-purpose') || 'Work Travel',
+    purpose: 'Work Travel',
     notes: getMileageValue('mileage-notes'),
     stops: [],
     startedAt: new Date().toISOString()
@@ -3739,7 +3742,7 @@ function openModuleScreen(key, options = {}) {
       ${cfg.actions.length ? `<div class="module-action-list">
         ${cfg.actions.map(action => `<button class="module-action-btn" type="button" data-action="${escapeHtml(action.action)}">${escapeHtml(action.label)}</button>`).join('')}
       </div>` : ''}
-      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.5</div>' : ''}
+      ${key === 'settings' ? '<div class="module-version">VISTA v0.2.6</div>' : ''}
     `;
   }
   moduleBody.querySelectorAll('[data-action]').forEach(btn => {
