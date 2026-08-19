@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.11.1</title>
+<title>VISTA v0.2.12</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -96,20 +96,55 @@
 
   .brand-mark-placeholder {
     flex: 0 0 auto;
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(145deg, var(--vista-navy), var(--vista-teal));
-    color: var(--vista-warm-white);
-    border: 1px solid rgba(233,221,199,0.72);
-    box-shadow: 0 8px 18px rgba(11,53,87,0.18);
-    font-family: Georgia, serif;
-    font-size: 22px;
-    font-weight: 800;
+    position: relative;
+    background: rgba(255,255,255,0.64);
+    border: 1px solid rgba(233,221,199,0.78);
+    box-shadow: 0 10px 22px rgba(11,53,87,0.12);
+    color: transparent;
+    font-size: 0;
     line-height: 1;
+    overflow: hidden;
+  }
+
+  .brand-mark-placeholder::before,
+  .brand-mark-placeholder::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    width: 22px;
+    height: 30px;
+    transform-origin: 50% 100%;
+  }
+
+  .brand-mark-placeholder::before {
+    left: 9px;
+    background: linear-gradient(150deg, var(--vista-navy), var(--vista-teal));
+    border-radius: 22px 6px 20px 16px;
+    transform: rotate(-28deg);
+  }
+
+  .brand-mark-placeholder::after {
+    right: 9px;
+    background: linear-gradient(150deg, var(--vista-sage), #506D58);
+    border-radius: 6px 22px 16px 20px;
+    transform: rotate(28deg);
+  }
+
+  .brand-lockup .brand-mark-placeholder {
+    background:
+      radial-gradient(circle at 52% 21%, var(--vista-gold) 0 7px, transparent 8px),
+      rgba(255,255,255,0.64);
+  }
+
+  .brand-lockup .brand-mark-placeholder::before,
+  .brand-lockup .brand-mark-placeholder::after {
+    bottom: 7px;
   }
 
   #sidebar-header .brand-mark-placeholder {
@@ -118,6 +153,24 @@
     border-radius: 8px;
     font-size: 18px;
     box-shadow: none;
+    background:
+      radial-gradient(circle at 52% 22%, var(--vista-gold) 0 5px, transparent 6px),
+      rgba(255,255,255,0.64);
+  }
+
+  #sidebar-header .brand-mark-placeholder::before,
+  #sidebar-header .brand-mark-placeholder::after {
+    bottom: 5px;
+    height: 22px;
+    width: 16px;
+  }
+
+  #sidebar-header .brand-mark-placeholder::before {
+    left: 7px;
+  }
+
+  #sidebar-header .brand-mark-placeholder::after {
+    right: 7px;
   }
 
   #sidebar-header .subtitle {
@@ -1203,7 +1256,8 @@
     z-index: 1500;
     overflow-y: auto;
     background:
-      linear-gradient(180deg, rgba(250,248,244,0.96), rgba(239,246,246,0.96)),
+      linear-gradient(180deg, rgba(250,248,243,0.98) 0%, rgba(247,250,249,0.98) 56%, rgba(238,246,246,0.96) 100%),
+      linear-gradient(135deg, rgba(85,170,176,0.10), rgba(242,179,61,0.08) 45%, rgba(120,145,120,0.10)),
       var(--paper);
     font-family: 'Helvetica Neue', Arial, sans-serif;
     padding: 22px 18px 94px;
@@ -1221,12 +1275,15 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 14px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+    padding: 8px 0 12px;
+    border-bottom: 1px solid rgba(11,53,87,0.10);
   }
   .home-brand {
-    font-family: Georgia, serif;
-    color: var(--navy-deep);
-    font-size: 34px;
+    color: var(--navy);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 27px;
+    letter-spacing: 0.22em;
     line-height: 1;
     font-weight: 800;
   }
@@ -1239,7 +1296,7 @@
     min-width: 96px;
     border: 1px solid var(--line);
     border-radius: 8px;
-    background: rgba(255,255,255,0.72);
+    background: rgba(255,255,255,0.78);
     color: var(--navy);
     padding: 8px 9px;
     text-align: right;
@@ -1249,14 +1306,14 @@
   .module-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px 12px;
+    gap: 14px 10px;
   }
   .module-tile {
     min-height: 92px;
-    border: 0;
-    border-radius: 14px;
-    background: transparent;
-    box-shadow: none;
+    border: 1px solid rgba(233,221,199,0.68);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.58);
+    box-shadow: 0 8px 22px rgba(11,53,87,0.06);
     color: var(--ink);
     cursor: pointer;
     padding: 8px 5px;
@@ -1273,22 +1330,23 @@
     outline-offset: 4px;
   }
   .module-tile:hover {
-    background: rgba(255,255,255,0.42);
+    background: rgba(255,255,255,0.76);
+    border-color: rgba(85,170,176,0.34);
   }
   .module-tile:active {
     transform: translateY(1px);
-    background: rgba(233,221,199,0.38);
+    background: rgba(233,221,199,0.30);
   }
   .module-icon {
     width: 54px;
     height: 54px;
-    border-radius: 16px;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: white;
-    background: var(--navy);
-    box-shadow: 0 8px 16px rgba(11,53,87,0.16);
+    background: linear-gradient(145deg, var(--vista-navy), var(--vista-teal));
+    box-shadow: 0 9px 18px rgba(11,53,87,0.16);
   }
   .module-icon i,
   .bottom-nav-btn i {
@@ -1303,12 +1361,13 @@
     height: 24px;
     stroke-width: 2.2;
   }
-  .module-tile.teal .module-icon { background: var(--vista-teal); }
-  .module-tile.clay .module-icon { background: var(--vista-gold); color: var(--vista-navy); }
-  .module-tile.sage .module-icon { background: var(--vista-sage); }
+  .module-tile.teal .module-icon { background: linear-gradient(145deg, var(--vista-teal), var(--vista-aqua)); }
+  .module-tile.clay .module-icon { background: linear-gradient(145deg, var(--vista-gold), #F6C86C); color: var(--vista-navy); }
+  .module-tile.sage .module-icon { background: linear-gradient(145deg, var(--vista-sage), #91A591); }
   .module-tile.red .module-icon,
   .module-tile[data-tone="red"] .module-icon { background: var(--severity-urgent); }
   .module-label {
+    color: var(--navy-deep);
     font-size: 12px;
     line-height: 1.2;
     font-weight: 800;
@@ -1342,6 +1401,8 @@
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(11,53,87,0.10);
   }
   .module-title-wrap {
     display: flex;
@@ -1350,10 +1411,11 @@
     min-width: 0;
   }
   .module-title {
-    color: var(--navy-deep);
-    font-family: Georgia, serif;
-    font-size: 25px;
+    color: var(--navy);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 23px;
     font-weight: 800;
+    letter-spacing: 0.04em;
     line-height: 1.1;
   }
   .module-kicker {
@@ -1854,10 +1916,10 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 4px;
     padding: 6px;
-    border: 1px solid rgba(31,58,95,0.12);
+    border: 1px solid rgba(11,53,87,0.12);
     border-radius: 8px;
-    background: rgba(255,255,255,0.94);
-    box-shadow: 0 10px 30px rgba(31,58,95,0.18);
+    background: rgba(250,248,243,0.94);
+    box-shadow: 0 10px 30px rgba(11,53,87,0.16);
     font-family: 'Helvetica Neue', Arial, sans-serif;
   }
   .bottom-nav-btn {
@@ -1881,7 +1943,7 @@
     stroke-width: 2.4;
   }
   .bottom-nav-btn.active {
-    background: #EAF0F7;
+    background: rgba(22,119,137,0.12);
     color: var(--navy);
   }
   @media (min-width: 900px) {
@@ -2021,7 +2083,7 @@
       </div>
     </div>
     <div id="list"></div>
-  <div id="footer-note">v0.2.11.1</div>
+  <div id="footer-note">v0.2.12</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -3793,14 +3855,25 @@ function markMileageLogSync(id, status, sheetRow) {
   saveMileageState();
 }
 
-function mileageLogTime(log) {
-  const value = log.completedAt || log.updatedAt || log.startedAt || log.date || '';
+function mileageLogDateTime(log) {
+  const date = (log && log.date) || '';
+  const value = /^\d{4}-\d{2}-\d{2}$/.test(date) ? `${date}T00:00:00` : date;
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : 0;
+}
+
+function mileageEntryTime(log) {
+  const value = (log && (log.completedAt || log.updatedAt || log.startedAt)) || '';
   const time = Date.parse(value);
   return Number.isFinite(time) ? time : 0;
 }
 
 function sortMileageLogs(logs) {
-  return (logs || []).slice().sort((a, b) => mileageLogTime(b) - mileageLogTime(a));
+  return (logs || []).slice().sort((a, b) => {
+    const dateDiff = mileageLogDateTime(b) - mileageLogDateTime(a);
+    if (dateDiff) return dateDiff;
+    return mileageEntryTime(b) - mileageEntryTime(a);
+  });
 }
 
 function mileageNumber(value) {
@@ -4059,7 +4132,7 @@ function jsonpRequest(url, params, timeoutMs = 12000) {
 }
 
 async function saveMileageToBackend(record) {
-  const payload = mileageBackendPayload(record, 'VISTA v0.2.11.1');
+  const payload = mileageBackendPayload(record, 'VISTA v0.2.12');
   payload.user = 'Alysha';
   const response = await jsonpRequest(VISTA_GAS_URL, {
     action: 'saveMileage',
@@ -4069,7 +4142,7 @@ async function saveMileageToBackend(record) {
 }
 
 async function updateMileageInBackend(record) {
-  const payload = mileageBackendPayload(record, 'VISTA v0.2.11.1');
+  const payload = mileageBackendPayload(record, 'VISTA v0.2.12');
   payload.user = 'Alysha';
   return jsonpRequest(VISTA_GAS_URL, {
     action: 'updateMileage',
@@ -4083,7 +4156,7 @@ async function deleteMileageInBackend(record) {
     payload: JSON.stringify({
       id: record.id,
       reason: 'Deleted in VISTA',
-      source: 'VISTA v0.2.11.1'
+      source: 'VISTA v0.2.12'
     })
   });
 }
@@ -4598,8 +4671,8 @@ function renderSettingsModule() {
         `;
       }).join('')}
     </div>
-    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>v0.2.11.1 keeps mileage Sheet saves small enough for the starter backend.</span></div>
-    <div class="module-version">VISTA v0.2.11.1</div>
+    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>v0.2.12 adds the first VISTA brand polish pass and date-based mileage sorting.</span></div>
+    <div class="module-version">VISTA v0.2.12</div>
   `;
   moduleBody.querySelectorAll('[data-dashboard-toggle]').forEach(input => {
     input.addEventListener('change', () => {
