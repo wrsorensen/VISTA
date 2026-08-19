@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.10</title>
+<title>VISTA v0.2.11</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1648,7 +1648,8 @@
     display: grid;
     align-items: end;
     background: rgba(7,36,61,0.32);
-    padding: 16px;
+    overflow-y: auto;
+    padding: 16px 16px calc(112px + env(safe-area-inset-bottom));
   }
   .mileage-end-panel {
     width: min(100%, 460px);
@@ -1658,6 +1659,8 @@
     background: var(--panel);
     box-shadow: 0 -16px 36px rgba(11,53,87,0.22);
     padding: 16px;
+    max-height: calc(100vh - 132px);
+    overflow-y: auto;
   }
   .mileage-end-title {
     color: var(--navy-deep);
@@ -1672,6 +1675,24 @@
     font-size: 12px;
     line-height: 1.35;
     margin-bottom: 14px;
+  }
+  .mileage-note-preview {
+    background: #F7F9FB;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 10px;
+  }
+  .mileage-note-preview strong {
+    color: var(--ink-soft);
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+    text-transform: uppercase;
   }
   .mileage-row {
     display: grid;
@@ -2000,7 +2021,7 @@
       </div>
     </div>
     <div id="list"></div>
-  <div id="footer-note">v0.2.10</div>
+  <div id="footer-note">v0.2.11</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -3821,6 +3842,21 @@ function confirmMileageJump(prevValue, nextValue, label = 'mileage') {
   return confirm(`This ${label} adds ${formatOdometer(jump)} miles. Check the odometer before continuing.`);
 }
 
+function mileageTripNotes(record) {
+  return record ? (record.tripNotes || record.notes || '') : '';
+}
+
+function mileageEndNotes(record) {
+  return record ? (record.endNotes || '') : '';
+}
+
+function combineMileageNotes(tripNotes, endNotes) {
+  const parts = [];
+  if (tripNotes) parts.push(`Trip notes: ${tripNotes}`);
+  if (endNotes) parts.push(`End notes: ${endNotes}`);
+  return parts.join('\n');
+}
+
 function getMileageValue(id) {
   const el = document.getElementById(id);
   return el ? el.value.trim() : '';
@@ -3911,6 +3947,8 @@ function mileageSummaryText(record) {
   const miles = record.totalMiles !== undefined && record.totalMiles !== null
     ? `${record.totalMiles} miles`
     : 'Mileage day open';
+  const tripNotes = mileageTripNotes(record);
+  const endNotes = mileageEndNotes(record);
   return [
     `VISTA Mileage - ${record.date || mileageToday()}`,
     record.startLocation ? `Start location: ${record.startLocation}` : '',
@@ -3918,7 +3956,8 @@ function mileageSummaryText(record) {
     record.endLocation ? `End location: ${record.endLocation}` : '',
     `End odometer: ${formatOdometer(record.endOdometer || '')}`,
     `Total: ${miles}`,
-    record.notes ? `Notes: ${record.notes}` : '',
+    tripNotes ? `Trip notes: ${tripNotes}` : '',
+    endNotes ? `End notes: ${endNotes}` : '',
     stops ? `Stops:\n${stops}` : 'Stops: none'
   ].filter(Boolean).join('\n');
 }
@@ -3929,11 +3968,14 @@ function mileageLogDetails(log) {
     ? stops.map((stop, idx) => `<div>${idx + 1}. ${escapeHtml(stop.label || 'Stop')} - ${escapeHtml(formatOdometer(stop.odometer || ''))}${stop.notes ? ` - ${escapeHtml(stop.notes)}` : ''}</div>`).join('')
     : '<div>No stops saved.</div>';
   const showStatus = log.saveStatus && !['saved', 'updated'].includes(String(log.saveStatus).toLowerCase());
+  const tripNotes = mileageTripNotes(log);
+  const endNotes = mileageEndNotes(log);
   return `
     <div><strong>Start:</strong> ${escapeHtml(log.startLocation || 'Start')} - ${escapeHtml(formatOdometer(log.startOdometer || ''))}</div>
     ${stopLines}
     <div><strong>End:</strong> ${escapeHtml(log.endLocation || 'End')} - ${escapeHtml(formatOdometer(log.endOdometer || ''))}</div>
-    ${log.notes ? `<div><strong>Notes:</strong> ${escapeHtml(log.notes)}</div>` : ''}
+    ${tripNotes ? `<div><strong>Trip notes:</strong> ${escapeHtml(tripNotes)}</div>` : ''}
+    ${endNotes ? `<div><strong>End notes:</strong> ${escapeHtml(endNotes)}</div>` : ''}
     ${showStatus ? `<div><strong>Status:</strong> ${escapeHtml(log.saveStatus)}${log.sheetRow ? ` - Sheet row ${escapeHtml(String(log.sheetRow))}` : ''}</div>` : ''}
     <div class="mileage-log-actions">
       <button type="button" data-mileage-edit="${escapeHtml(log.id)}">Edit</button>
@@ -3997,7 +4039,7 @@ async function saveMileageToBackend(record) {
   const payload = {
     ...record,
     user: 'Alysha',
-    source: 'VISTA v0.2.10'
+    source: 'VISTA v0.2.11'
   };
   const response = await jsonpRequest(VISTA_GAS_URL, {
     action: 'saveMileage',
@@ -4010,7 +4052,7 @@ async function updateMileageInBackend(record) {
   const payload = {
     ...record,
     user: 'Alysha',
-    source: 'VISTA v0.2.10'
+    source: 'VISTA v0.2.11'
   };
   return jsonpRequest(VISTA_GAS_URL, {
     action: 'updateMileage',
@@ -4024,7 +4066,7 @@ async function deleteMileageInBackend(record) {
     payload: JSON.stringify({
       id: record.id,
       reason: 'Deleted in VISTA',
-      source: 'VISTA v0.2.10'
+      source: 'VISTA v0.2.11'
     })
   });
 }
@@ -4061,6 +4103,8 @@ function bindMileageLogControls() {
 
 function renderMileageEditForm(log) {
   const stops = Array.isArray(log.stops) ? log.stops : [];
+  const tripNotes = mileageTripNotes(log);
+  const endNotes = mileageEndNotes(log);
   moduleBody.innerHTML = `
     <div class="mileage-shell">
       <div class="mileage-open-line">Edit mileage: ${escapeHtml(mileageDisplayDate(log.date))}</div>
@@ -4083,7 +4127,8 @@ function renderMileageEditForm(log) {
           ${locationFieldHtml('mileage-edit-end-location', 'End location', log.endLocation || 'Office')}
           <div class="mileage-field"><label>End odometer</label><input id="mileage-edit-end" type="text" inputmode="decimal" data-odometer value="${escapeHtml(formatOdometer(log.endOdometer || ''))}"></div>
         </div>
-        <div class="mileage-field"><label>Trip notes</label><textarea id="mileage-edit-notes" placeholder="Optional notes">${escapeHtml(log.notes || '')}</textarea></div>
+        <div class="mileage-field"><label>Trip notes</label><textarea id="mileage-edit-trip-notes" placeholder="Notes from the start or during the trip">${escapeHtml(tripNotes)}</textarea></div>
+        <div class="mileage-field"><label>End notes</label><textarea id="mileage-edit-end-notes" placeholder="Notes from finishing the trip">${escapeHtml(endNotes)}</textarea></div>
       </div>
       <div class="mileage-actions">
         <button class="primary" id="mileage-edit-save-btn" type="button">Save Edit</button>
@@ -4141,17 +4186,19 @@ function renumberMileageEditStops() {
 }
 
 function renderEndMileagePrompt(session, currentOdometer) {
+  const tripNotes = mileageTripNotes(session);
   return `
     <div class="mileage-end-backdrop" role="dialog" aria-modal="true" aria-label="End trip">
       <div class="mileage-end-panel">
         <div class="mileage-end-title">End Trip</div>
         <div class="mileage-end-subtitle">Finish this mileage entry and save it as one trip.</div>
         <div class="mileage-fields">
+          ${tripNotes ? `<div class="mileage-note-preview"><strong>Trip notes</strong>${escapeHtml(tripNotes)}</div>` : ''}
           <div class="mileage-row">
             ${locationFieldHtml('mileage-end-location', 'End location', session.endLocation || 'Office')}
             <div class="mileage-field"><label>End odometer</label><input id="mileage-end-odo" type="text" inputmode="decimal" data-odometer value="${escapeHtml(formatOdometer(currentOdometer || ''))}" placeholder="Required"></div>
           </div>
-          <div class="mileage-field"><label>Final notes</label><textarea id="mileage-end-notes" placeholder="Optional final notes">${escapeHtml(session.notes || '')}</textarea></div>
+          <div class="mileage-field"><label>End notes</label><textarea id="mileage-end-notes" placeholder="Optional notes from finishing the trip">${escapeHtml(session.endNotes || '')}</textarea></div>
         </div>
         <div class="mileage-actions" style="margin-top:14px;">
           <button class="primary" id="mileage-end-save-btn" type="button">Save Finished Trip</button>
@@ -4280,6 +4327,8 @@ function startMileageDay() {
     startLocation,
     startOdometer,
     purpose: 'Work Travel',
+    tripNotes: getMileageValue('mileage-notes'),
+    endNotes: '',
     notes: getMileageValue('mileage-notes'),
     stops: [],
     startedAt: new Date().toISOString()
@@ -4337,13 +4386,16 @@ function endMileageDay() {
   }
   if (!confirmMileageJump(mileageLastOdometer(session), endOdometer, 'final leg')) return;
   const endNotes = getMileageValue('mileage-end-notes');
+  const tripNotes = mileageTripNotes(session);
   const record = {
     ...session,
     endLocation,
     endOdometer,
     totalMiles,
     route: `${session.startLocation || 'Start'} to ${endLocation}`,
-    notes: endNotes || session.notes || '',
+    tripNotes,
+    endNotes,
+    notes: combineMileageNotes(tripNotes, endNotes),
     saveStatus: VISTA_GAS_URL ? 'saving' : 'local only',
     completedAt: new Date().toISOString()
   };
@@ -4411,7 +4463,8 @@ function saveMileageEditForm() {
   const startOdometer = getOdometerValue('mileage-edit-start');
   const endLocation = getMileageValue('mileage-edit-end-location');
   const endOdometer = getOdometerValue('mileage-edit-end');
-  const notes = getMileageValue('mileage-edit-notes');
+  const tripNotes = getMileageValue('mileage-edit-trip-notes');
+  const endNotes = getMileageValue('mileage-edit-end-notes');
   if (!startLocation || !startOdometer || mileageNumber(startOdometer) === null || mileageNumber(startOdometer) < 0) {
     setMileageStatus('Start location and odometer need valid values.', true);
     return;
@@ -4437,7 +4490,9 @@ function saveMileageEditForm() {
     endOdometer,
     totalMiles,
     route: `${startLocation || 'Start'} to ${endLocation}`,
-    notes,
+    tripNotes,
+    endNotes,
+    notes: combineMileageNotes(tripNotes, endNotes),
     saveStatus: VISTA_GAS_URL ? 'updating' : 'local edited',
     updatedAt: new Date().toISOString()
   };
@@ -4526,8 +4581,8 @@ function renderSettingsModule() {
         `;
       }).join('')}
     </div>
-    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>v0.2.10 improves mileage field safety and clarity.</span></div>
-    <div class="module-version">VISTA v0.2.10</div>
+    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>v0.2.11 fixes End Trip mobile spacing and separates trip/end mileage notes.</span></div>
+    <div class="module-version">VISTA v0.2.11</div>
   `;
   moduleBody.querySelectorAll('[data-dashboard-toggle]').forEach(input => {
     input.addEventListener('change', () => {
