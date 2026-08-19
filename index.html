@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.11</title>
+<title>VISTA v0.2.11.1</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -2021,7 +2021,7 @@
       </div>
     </div>
     <div id="list"></div>
-  <div id="footer-note">v0.2.11</div>
+  <div id="footer-note">v0.2.11.1</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -3857,6 +3857,29 @@ function combineMileageNotes(tripNotes, endNotes) {
   return parts.join('\n');
 }
 
+function mileageBackendPayload(record, source) {
+  return {
+    id: record.id,
+    date: record.date,
+    vehicle: record.vehicle || '',
+    workArea: record.workArea || '',
+    route: record.route || '',
+    startLocation: record.startLocation || '',
+    startOdometer: record.startOdometer || '',
+    endLocation: record.endLocation || '',
+    endOdometer: record.endOdometer || '',
+    totalMiles: record.totalMiles,
+    stops: (record.stops || []).map(stop => ({
+      label: stop.label || '',
+      odometer: stop.odometer || '',
+      notes: stop.notes || ''
+    })),
+    purpose: record.purpose || 'Work Travel',
+    notes: record.notes || combineMileageNotes(mileageTripNotes(record), mileageEndNotes(record)),
+    source
+  };
+}
+
 function getMileageValue(id) {
   const el = document.getElementById(id);
   return el ? el.value.trim() : '';
@@ -4036,11 +4059,8 @@ function jsonpRequest(url, params, timeoutMs = 12000) {
 }
 
 async function saveMileageToBackend(record) {
-  const payload = {
-    ...record,
-    user: 'Alysha',
-    source: 'VISTA v0.2.11'
-  };
+  const payload = mileageBackendPayload(record, 'VISTA v0.2.11.1');
+  payload.user = 'Alysha';
   const response = await jsonpRequest(VISTA_GAS_URL, {
     action: 'saveMileage',
     payload: JSON.stringify(payload)
@@ -4049,11 +4069,8 @@ async function saveMileageToBackend(record) {
 }
 
 async function updateMileageInBackend(record) {
-  const payload = {
-    ...record,
-    user: 'Alysha',
-    source: 'VISTA v0.2.11'
-  };
+  const payload = mileageBackendPayload(record, 'VISTA v0.2.11.1');
+  payload.user = 'Alysha';
   return jsonpRequest(VISTA_GAS_URL, {
     action: 'updateMileage',
     payload: JSON.stringify(payload)
@@ -4066,7 +4083,7 @@ async function deleteMileageInBackend(record) {
     payload: JSON.stringify({
       id: record.id,
       reason: 'Deleted in VISTA',
-      source: 'VISTA v0.2.11'
+      source: 'VISTA v0.2.11.1'
     })
   });
 }
@@ -4581,8 +4598,8 @@ function renderSettingsModule() {
         `;
       }).join('')}
     </div>
-    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>v0.2.11 fixes End Trip mobile spacing and separates trip/end mileage notes.</span></div>
-    <div class="module-version">VISTA v0.2.11</div>
+    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>v0.2.11.1 keeps mileage Sheet saves small enough for the starter backend.</span></div>
+    <div class="module-version">VISTA v0.2.11.1</div>
   `;
   moduleBody.querySelectorAll('[data-dashboard-toggle]').forEach(input => {
     input.addEventListener('change', () => {
