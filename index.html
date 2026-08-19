@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISTA v0.2.9</title>
+<title>VISTA v0.2.10</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -1641,6 +1641,38 @@
   .location-suggestion.manual strong {
     color: var(--vista-teal);
   }
+  .mileage-end-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2600;
+    display: grid;
+    align-items: end;
+    background: rgba(7,36,61,0.32);
+    padding: 16px;
+  }
+  .mileage-end-panel {
+    width: min(100%, 460px);
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 10px 10px 8px 8px;
+    background: var(--panel);
+    box-shadow: 0 -16px 36px rgba(11,53,87,0.22);
+    padding: 16px;
+  }
+  .mileage-end-title {
+    color: var(--navy-deep);
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 4px;
+  }
+  .mileage-end-subtitle {
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.35;
+    margin-bottom: 14px;
+  }
   .mileage-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1968,7 +2000,7 @@
       </div>
     </div>
     <div id="list"></div>
-  <div id="footer-note">v0.2.9</div>
+  <div id="footer-note">v0.2.10</div>
   </div>
   <div id="map"></div>
   <div id="task-drawer" aria-live="polite">
@@ -3675,6 +3707,7 @@ function loadMileageState() {
 
 let mileageState = loadMileageState();
 let activeMileageEditId = null;
+let endMileagePromptOpen = false;
 
 function saveMileageState() {
   localStorage.setItem(MILEAGE_STORAGE_KEY, JSON.stringify(mileageState));
@@ -3750,8 +3783,26 @@ function sortMileageLogs(logs) {
 }
 
 function mileageNumber(value) {
-  const n = Number(value);
+  const raw = String(value ?? '').replace(/,/g, '').trim();
+  if (!raw) return null;
+  const n = Number(raw);
   return Number.isFinite(n) ? n : null;
+}
+
+function formatOdometer(value) {
+  const n = mileageNumber(value);
+  if (n === null) return String(value || '');
+  return n.toLocaleString(undefined, { maximumFractionDigits: 1 });
+}
+
+function cleanOdometer(value) {
+  const n = mileageNumber(value);
+  if (n === null) return String(value || '').trim();
+  return String(n);
+}
+
+function getOdometerValue(id) {
+  return cleanOdometer(getMileageValue(id));
 }
 
 function mileageTotal(startOdometer, endOdometer) {
@@ -3759,6 +3810,15 @@ function mileageTotal(startOdometer, endOdometer) {
   const end = mileageNumber(endOdometer);
   if (start === null || end === null || end < start) return null;
   return Math.round((end - start) * 10) / 10;
+}
+
+function confirmMileageJump(prevValue, nextValue, label = 'mileage') {
+  const prev = mileageNumber(prevValue);
+  const next = mileageNumber(nextValue);
+  if (prev === null || next === null) return true;
+  const jump = Math.round((next - prev) * 10) / 10;
+  if (jump <= 100) return true;
+  return confirm(`This ${label} adds ${formatOdometer(jump)} miles. Check the odometer before continuing.`);
 }
 
 function getMileageValue(id) {
@@ -3784,14 +3844,13 @@ function renderLocationSuggestions(input) {
     return;
   }
   const matches = searchLocations(query);
-  const manual = {
-    value: query,
-    title: `Use "${query}"`,
-    subtitle: 'Manual location'
-  };
-  const rows = [...matches, manual];
-  list.innerHTML = rows.map((item, idx) => `
-    <button class="location-suggestion ${idx === rows.length - 1 ? 'manual' : ''}" type="button" data-location-value="${escapeHtml(item.value)}">
+  if (!matches.length) {
+    list.classList.remove('open');
+    list.innerHTML = '';
+    return;
+  }
+  list.innerHTML = matches.map(item => `
+    <button class="location-suggestion" type="button" data-location-value="${escapeHtml(item.value)}">
       <strong>${escapeHtml(item.title)}</strong>
       <span>${escapeHtml(item.subtitle || '')}</span>
     </button>
@@ -3804,6 +3863,7 @@ function bindLocationSearch(root = moduleBody) {
   root.querySelectorAll('[data-location-search]').forEach(input => {
     input.addEventListener('input', () => renderLocationSuggestions(input));
     input.addEventListener('focus', () => renderLocationSuggestions(input));
+    input.addEventListener('blur', () => setTimeout(closeLocationSuggestions, 120));
   });
   root.querySelectorAll('.location-suggestions').forEach(list => {
     list.addEventListener('mousedown', event => {
@@ -3813,6 +3873,18 @@ function bindLocationSearch(root = moduleBody) {
       const input = root.querySelector(`#${list.dataset.locationSuggestionsFor}`);
       if (input) input.value = btn.dataset.locationValue || '';
       closeLocationSuggestions();
+    });
+  });
+}
+
+function bindOdometerFormatting(root = moduleBody) {
+  if (!root) return;
+  root.querySelectorAll('[data-odometer]').forEach(input => {
+    input.addEventListener('focus', () => {
+      input.value = String(input.value || '').replace(/,/g, '');
+    });
+    input.addEventListener('blur', () => {
+      input.value = formatOdometer(input.value);
     });
   });
 }
@@ -3834,7 +3906,7 @@ function mileageLastOdometer(session) {
 
 function mileageSummaryText(record) {
   const stops = (record.stops || [])
-    .map((stop, idx) => `${idx + 1}. ${stop.label || 'Stop'}${stop.odometer ? ` @ ${stop.odometer}` : ''}${stop.notes ? ` - ${stop.notes}` : ''}`)
+    .map((stop, idx) => `${idx + 1}. ${stop.label || 'Stop'}${stop.odometer ? ` @ ${formatOdometer(stop.odometer)}` : ''}${stop.notes ? ` - ${stop.notes}` : ''}`)
     .join('\n');
   const miles = record.totalMiles !== undefined && record.totalMiles !== null
     ? `${record.totalMiles} miles`
@@ -3842,9 +3914,9 @@ function mileageSummaryText(record) {
   return [
     `VISTA Mileage - ${record.date || mileageToday()}`,
     record.startLocation ? `Start location: ${record.startLocation}` : '',
-    `Start odometer: ${record.startOdometer || ''}`,
+    `Start odometer: ${formatOdometer(record.startOdometer || '')}`,
     record.endLocation ? `End location: ${record.endLocation}` : '',
-    `End odometer: ${record.endOdometer || ''}`,
+    `End odometer: ${formatOdometer(record.endOdometer || '')}`,
     `Total: ${miles}`,
     record.notes ? `Notes: ${record.notes}` : '',
     stops ? `Stops:\n${stops}` : 'Stops: none'
@@ -3854,14 +3926,15 @@ function mileageSummaryText(record) {
 function mileageLogDetails(log) {
   const stops = log.stops || [];
   const stopLines = stops.length
-    ? stops.map((stop, idx) => `<div>${idx + 1}. ${escapeHtml(stop.label || 'Stop')} - ${escapeHtml(String(stop.odometer || ''))}${stop.notes ? ` - ${escapeHtml(stop.notes)}` : ''}</div>`).join('')
+    ? stops.map((stop, idx) => `<div>${idx + 1}. ${escapeHtml(stop.label || 'Stop')} - ${escapeHtml(formatOdometer(stop.odometer || ''))}${stop.notes ? ` - ${escapeHtml(stop.notes)}` : ''}</div>`).join('')
     : '<div>No stops saved.</div>';
+  const showStatus = log.saveStatus && !['saved', 'updated'].includes(String(log.saveStatus).toLowerCase());
   return `
-    <div><strong>Start:</strong> ${escapeHtml(log.startLocation || 'Start')} - ${escapeHtml(String(log.startOdometer || ''))}</div>
+    <div><strong>Start:</strong> ${escapeHtml(log.startLocation || 'Start')} - ${escapeHtml(formatOdometer(log.startOdometer || ''))}</div>
     ${stopLines}
-    <div><strong>End:</strong> ${escapeHtml(log.endLocation || 'End')} - ${escapeHtml(String(log.endOdometer || ''))}</div>
+    <div><strong>End:</strong> ${escapeHtml(log.endLocation || 'End')} - ${escapeHtml(formatOdometer(log.endOdometer || ''))}</div>
     ${log.notes ? `<div><strong>Notes:</strong> ${escapeHtml(log.notes)}</div>` : ''}
-    ${log.saveStatus ? `<div><strong>Status:</strong> ${escapeHtml(log.saveStatus)}${log.sheetRow ? ` - Sheet row ${escapeHtml(String(log.sheetRow))}` : ''}</div>` : ''}
+    ${showStatus ? `<div><strong>Status:</strong> ${escapeHtml(log.saveStatus)}${log.sheetRow ? ` - Sheet row ${escapeHtml(String(log.sheetRow))}` : ''}</div>` : ''}
     <div class="mileage-log-actions">
       <button type="button" data-mileage-edit="${escapeHtml(log.id)}">Edit</button>
       <button class="danger" type="button" data-mileage-delete="${escapeHtml(log.id)}">Delete</button>
@@ -3924,7 +3997,7 @@ async function saveMileageToBackend(record) {
   const payload = {
     ...record,
     user: 'Alysha',
-    source: 'VISTA v0.2.9'
+    source: 'VISTA v0.2.10'
   };
   const response = await jsonpRequest(VISTA_GAS_URL, {
     action: 'saveMileage',
@@ -3937,7 +4010,7 @@ async function updateMileageInBackend(record) {
   const payload = {
     ...record,
     user: 'Alysha',
-    source: 'VISTA v0.2.9'
+    source: 'VISTA v0.2.10'
   };
   return jsonpRequest(VISTA_GAS_URL, {
     action: 'updateMileage',
@@ -3951,7 +4024,7 @@ async function deleteMileageInBackend(record) {
     payload: JSON.stringify({
       id: record.id,
       reason: 'Deleted in VISTA',
-      source: 'VISTA v0.2.9'
+      source: 'VISTA v0.2.10'
     })
   });
 }
@@ -3968,7 +4041,7 @@ function renderMileageLogs() {
         <details class="mileage-log">
           <summary>
             <span class="mileage-log-title">${escapeHtml(mileageDisplayDate(log.date))}</span>
-            <span class="mileage-log-miles">${escapeHtml(String(log.totalMiles || 0))} miles</span>
+            <span class="mileage-log-miles">${escapeHtml(formatOdometer(log.totalMiles || 0))} miles</span>
           </summary>
           <div class="mileage-log-details">${mileageLogDetails(log)}</div>
         </details>
@@ -3995,7 +4068,7 @@ function renderMileageEditForm(log) {
       <div class="mileage-fields">
         <div class="mileage-row">
           ${locationFieldHtml('mileage-edit-start-location', 'Start location', log.startLocation || 'Office')}
-          <div class="mileage-field"><label>Start odometer</label><input id="mileage-edit-start" type="number" inputmode="decimal" min="0" step="0.1" value="${escapeHtml(String(log.startOdometer || ''))}"></div>
+          <div class="mileage-field"><label>Start odometer</label><input id="mileage-edit-start" type="text" inputmode="decimal" data-odometer value="${escapeHtml(formatOdometer(log.startOdometer || ''))}"></div>
         </div>
         <div class="mileage-list">
           <div class="mileage-list-title">Stops</div>
@@ -4008,9 +4081,9 @@ function renderMileageEditForm(log) {
         </div>
         <div class="mileage-row">
           ${locationFieldHtml('mileage-edit-end-location', 'End location', log.endLocation || 'Office')}
-          <div class="mileage-field"><label>End odometer</label><input id="mileage-edit-end" type="number" inputmode="decimal" min="0" step="0.1" value="${escapeHtml(String(log.endOdometer || ''))}"></div>
+          <div class="mileage-field"><label>End odometer</label><input id="mileage-edit-end" type="text" inputmode="decimal" data-odometer value="${escapeHtml(formatOdometer(log.endOdometer || ''))}"></div>
         </div>
-        <div class="mileage-field"><label>Notes</label><textarea id="mileage-edit-notes" placeholder="Optional notes">${escapeHtml(log.notes || '')}</textarea></div>
+        <div class="mileage-field"><label>Trip notes</label><textarea id="mileage-edit-notes" placeholder="Optional notes">${escapeHtml(log.notes || '')}</textarea></div>
       </div>
       <div class="mileage-actions">
         <button class="primary" id="mileage-edit-save-btn" type="button">Save Edit</button>
@@ -4025,6 +4098,7 @@ function renderMileageEditForm(log) {
     renderMileageModule();
   });
   bindLocationSearch();
+  bindOdometerFormatting();
   bindMileageEditStopControls();
 }
 
@@ -4032,7 +4106,7 @@ function mileageEditStopHtml(stop = {}, idx = 0) {
   return `
     <div class="mileage-row mileage-edit-stop" data-edit-stop>
       ${locationFieldHtml(`mileage-edit-stop-label-${idx}`, `Stop ${idx + 1}`, stop.label || '', 'Property, errand, route point')}
-      <div class="mileage-field"><label>Odometer</label><input id="mileage-edit-stop-odo-${idx}" data-edit-stop-odo type="number" inputmode="decimal" min="0" step="0.1" value="${escapeHtml(String(stop.odometer || ''))}"></div>
+      <div class="mileage-field"><label>Odometer</label><input id="mileage-edit-stop-odo-${idx}" data-edit-stop-odo data-odometer type="text" inputmode="decimal" value="${escapeHtml(formatOdometer(stop.odometer || ''))}"></div>
       <div class="mileage-field"><label>Stop notes</label><input id="mileage-edit-stop-notes-${idx}" data-edit-stop-notes type="text" value="${escapeHtml(stop.notes || '')}" placeholder="Optional"></div>
       <div class="mileage-actions"><button class="danger" type="button" data-remove-edit-stop>Remove Stop</button></div>
     </div>
@@ -4054,6 +4128,7 @@ function addMileageEditStop() {
   const idx = wrap.querySelectorAll('[data-edit-stop]').length;
   wrap.insertAdjacentHTML('beforeend', mileageEditStopHtml({}, idx));
   bindLocationSearch(wrap);
+  bindOdometerFormatting(wrap);
   bindMileageEditStopControls();
 }
 
@@ -4063,6 +4138,38 @@ function renumberMileageEditStops() {
     const label = row.querySelector('.mileage-field label');
     if (label) label.textContent = `Stop ${idx + 1}`;
   });
+}
+
+function renderEndMileagePrompt(session, currentOdometer) {
+  return `
+    <div class="mileage-end-backdrop" role="dialog" aria-modal="true" aria-label="End trip">
+      <div class="mileage-end-panel">
+        <div class="mileage-end-title">End Trip</div>
+        <div class="mileage-end-subtitle">Finish this mileage entry and save it as one trip.</div>
+        <div class="mileage-fields">
+          <div class="mileage-row">
+            ${locationFieldHtml('mileage-end-location', 'End location', session.endLocation || 'Office')}
+            <div class="mileage-field"><label>End odometer</label><input id="mileage-end-odo" type="text" inputmode="decimal" data-odometer value="${escapeHtml(formatOdometer(currentOdometer || ''))}" placeholder="Required"></div>
+          </div>
+          <div class="mileage-field"><label>Final notes</label><textarea id="mileage-end-notes" placeholder="Optional final notes">${escapeHtml(session.notes || '')}</textarea></div>
+        </div>
+        <div class="mileage-actions" style="margin-top:14px;">
+          <button class="primary" id="mileage-end-save-btn" type="button">Save Finished Trip</button>
+          <button id="mileage-end-cancel-btn" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openEndMileagePrompt() {
+  endMileagePromptOpen = true;
+  renderMileageModule();
+}
+
+function closeEndMileagePrompt() {
+  endMileagePromptOpen = false;
+  renderMileageModule();
 }
 
 function renderMileageModule() {
@@ -4085,10 +4192,10 @@ function renderMileageModule() {
             ${locationFieldHtml('mileage-start-location', 'Start location', 'Office')}
           </div>
           <div class="mileage-row">
-            <div class="mileage-field"><label>Start odometer</label><input id="mileage-start" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0"></div>
+            <div class="mileage-field"><label>Start odometer</label><input id="mileage-start" type="text" inputmode="decimal" data-odometer placeholder="0"></div>
             <div></div>
           </div>
-          <div class="mileage-field"><label>Notes</label><textarea id="mileage-notes" placeholder="Optional notes"></textarea></div>
+          <div class="mileage-field"><label>Trip notes</label><textarea id="mileage-notes" placeholder="Optional notes"></textarea></div>
         </div>
         <div class="mileage-actions">
           <button class="primary" id="mileage-start-btn" type="button">Start Mileage Day</button>
@@ -4098,6 +4205,7 @@ function renderMileageModule() {
     `;
     document.getElementById('mileage-start-btn').addEventListener('click', startMileageDay);
     bindLocationSearch();
+    bindOdometerFormatting();
     bindMileageLogControls();
     return;
   }
@@ -4108,12 +4216,12 @@ function renderMileageModule() {
   moduleBody.innerHTML = `
     <div class="mileage-shell">
       <div class="mileage-open-line">Open mileage day: ${escapeHtml(mileageDisplayDate(session.date))}</div>
-      <div class="mileage-total">${previewMiles === null ? '--' : escapeHtml(String(previewMiles))}<span>estimated miles</span></div>
-      <div class="mileage-status" id="mileage-status">Start: ${escapeHtml(session.startLocation || 'Start')} - ${escapeHtml(String(session.startOdometer))}. Current/approx odometer: ${escapeHtml(String(currentOdometer || session.startOdometer || ''))}</div>
+      <div class="mileage-total">${previewMiles === null ? '--' : escapeHtml(formatOdometer(previewMiles))}<span>estimated miles</span></div>
+      <div class="mileage-status" id="mileage-status">Start: ${escapeHtml(session.startLocation || 'Start')} - ${escapeHtml(formatOdometer(session.startOdometer))}. Current/approx odometer: ${escapeHtml(formatOdometer(currentOdometer || session.startOdometer || ''))}</div>
       <div class="mileage-fields">
         <div class="mileage-row">
           ${locationFieldHtml('mileage-stop-label', 'Stop / point', '', 'Property, errand, route point')}
-          <div class="mileage-field"><label>Odometer at stop</label><input id="mileage-stop-odo" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Required"></div>
+          <div class="mileage-field"><label>Odometer at stop</label><input id="mileage-stop-odo" type="text" inputmode="decimal" data-odometer placeholder="Required"></div>
         </div>
         <div class="mileage-field"><label>Stop notes</label><input id="mileage-stop-notes" type="text" placeholder="Optional"></div>
       </div>
@@ -4125,16 +4233,9 @@ function renderMileageModule() {
         ${session.stops.length ? session.stops.map((stop, idx) => `
           <div class="mileage-stop">
             <div><strong>${idx + 1}. ${escapeHtml(stop.label || 'Stop')}</strong><small>${escapeHtml(stop.notes || '')}</small></div>
-            <div>${stop.odometer ? escapeHtml(String(stop.odometer)) : ''}</div>
+            <div>${stop.odometer ? escapeHtml(formatOdometer(stop.odometer)) : ''}</div>
           </div>
         `).join('') : '<div class="mileage-status">No stops added yet.</div>'}
-      </div>
-      <div class="mileage-fields">
-        <div class="mileage-row">
-          ${locationFieldHtml('mileage-end-location', 'End location', session.endLocation || 'Office')}
-          <div class="mileage-field"><label>End odometer</label><input id="mileage-end-odo" type="number" inputmode="decimal" min="0" step="0.1" placeholder="Required"></div>
-        </div>
-        <div class="mileage-field"><label>End notes</label><textarea id="mileage-end-notes" placeholder="Optional close-out notes">${escapeHtml(session.notes || '')}</textarea></div>
       </div>
       <div class="mileage-actions">
         <button class="primary" id="mileage-end-btn" type="button">End Trip</button>
@@ -4142,20 +4243,26 @@ function renderMileageModule() {
         <button class="danger" id="mileage-clear-btn" type="button">Clear Open Day</button>
       </div>
       ${renderMileageLogs()}
+      ${endMileagePromptOpen ? renderEndMileagePrompt(session, currentOdometer) : ''}
     </div>
   `;
   document.getElementById('mileage-add-stop-btn').addEventListener('click', addMileageStop);
-  document.getElementById('mileage-end-btn').addEventListener('click', endMileageDay);
+  document.getElementById('mileage-end-btn').addEventListener('click', openEndMileagePrompt);
   document.getElementById('mileage-copy-btn').addEventListener('click', () => copyMileageSummary(mileageState.openSession));
   document.getElementById('mileage-clear-btn').addEventListener('click', clearMileageDay);
+  if (endMileagePromptOpen) {
+    document.getElementById('mileage-end-save-btn').addEventListener('click', endMileageDay);
+    document.getElementById('mileage-end-cancel-btn').addEventListener('click', closeEndMileagePrompt);
+  }
   bindLocationSearch();
+  bindOdometerFormatting();
   bindMileageLogControls();
 }
 
 function startMileageDay() {
   const date = getMileageValue('mileage-date');
   const startLocation = getMileageValue('mileage-start-location');
-  const startOdometer = getMileageValue('mileage-start');
+  const startOdometer = getOdometerValue('mileage-start');
   if (!date || !startLocation || !startOdometer) {
     setMileageStatus('Date, start location, and start odometer are required.', true);
     return;
@@ -4177,6 +4284,7 @@ function startMileageDay() {
     stops: [],
     startedAt: new Date().toISOString()
   };
+  endMileagePromptOpen = false;
   saveMileageState();
   renderMileageModule();
 }
@@ -4185,7 +4293,7 @@ function addMileageStop() {
   const session = mileageState.openSession;
   if (!session) return;
   const label = getMileageValue('mileage-stop-label');
-  const odometer = getMileageValue('mileage-stop-odo');
+  const odometer = getOdometerValue('mileage-stop-odo');
   const notes = getMileageValue('mileage-stop-notes');
   if (!label || !odometer) {
     setMileageStatus('Stop location and odometer are required.', true);
@@ -4197,6 +4305,7 @@ function addMileageStop() {
     setMileageStatus('Stop odometer is lower than the prior reading. Check the number.', true);
     return;
   }
+  if (!confirmMileageJump(prev, next, 'stop')) return;
   session.stops.push({
     id: 'stop-' + Date.now(),
     label,
@@ -4216,7 +4325,7 @@ function endMileageDay() {
     setMileageStatus('End location is required.', true);
     return;
   }
-  const endOdometer = getMileageValue('mileage-end-odo');
+  const endOdometer = getOdometerValue('mileage-end-odo');
   const totalMiles = mileageTotal(session.startOdometer, endOdometer);
   if (!endOdometer) {
     setMileageStatus('End odometer is required to save.', true);
@@ -4226,6 +4335,7 @@ function endMileageDay() {
     setMileageStatus('End odometer is lower than start. Check the numbers.', true);
     return;
   }
+  if (!confirmMileageJump(mileageLastOdometer(session), endOdometer, 'final leg')) return;
   const endNotes = getMileageValue('mileage-end-notes');
   const record = {
     ...session,
@@ -4239,19 +4349,20 @@ function endMileageDay() {
   };
   mileageState.logs = sortMileageLogs([record, ...(mileageState.logs || [])]).slice(0, 50);
   mileageState.openSession = null;
+  endMileagePromptOpen = false;
   saveMileageState();
   renderMileageModule();
   if (!VISTA_GAS_URL) {
     queueMileageSync(record, 'GAS URL not configured');
-    setMileageStatus(`Saved locally only: ${totalMiles} miles. Backend is not connected yet.`, true);
+    setMileageStatus(`Saved locally only: ${formatOdometer(totalMiles)} miles. Backend is not connected yet.`, true);
     return;
   }
-  setMileageStatus(`Saved locally. Sending ${totalMiles} miles...`);
+  setMileageStatus(`Saved locally. Sending ${formatOdometer(totalMiles)} miles...`);
   saveMileageToBackend(record)
     .then(response => {
       markMileageLogSync(record.id, 'saved', response.row || '');
       renderMileageModule();
-      setMileageStatus(`Saved: ${totalMiles} miles.`);
+      setMileageStatus(`Saved: ${formatOdometer(totalMiles)} miles.`);
     })
     .catch(error => {
       markMileageLogSync(record.id, 'local only');
@@ -4272,11 +4383,14 @@ function readMileageEditStops(startOdometer) {
   let priorOdometer = mileageNumber(startOdometer);
   for (let i = 0; i < rows.length; i++) {
     const label = rows[i].querySelector('[data-location-search]').value.trim();
-    const odometer = rows[i].querySelector('[data-edit-stop-odo]').value.trim();
+    const odometer = cleanOdometer(rows[i].querySelector('[data-edit-stop-odo]').value.trim());
     const notes = rows[i].querySelector('[data-edit-stop-notes]').value.trim();
     const nextOdometer = mileageNumber(odometer);
     if (!label || !odometer || nextOdometer === null || nextOdometer < priorOdometer) {
       return { error: 'Stop location and odometer need valid, non-decreasing values.' };
+    }
+    if (!confirmMileageJump(priorOdometer, nextOdometer, `stop ${i + 1}`)) {
+      return { cancelled: true };
     }
     stops.push({
       id: `stop-${Date.now()}-${i}`,
@@ -4294,15 +4408,16 @@ function saveMileageEditForm() {
   const log = (mileageState.logs || []).find(item => item.id === activeMileageEditId);
   if (!log) return;
   const startLocation = getMileageValue('mileage-edit-start-location');
-  const startOdometer = getMileageValue('mileage-edit-start');
+  const startOdometer = getOdometerValue('mileage-edit-start');
   const endLocation = getMileageValue('mileage-edit-end-location');
-  const endOdometer = getMileageValue('mileage-edit-end');
+  const endOdometer = getOdometerValue('mileage-edit-end');
   const notes = getMileageValue('mileage-edit-notes');
   if (!startLocation || !startOdometer || mileageNumber(startOdometer) === null || mileageNumber(startOdometer) < 0) {
     setMileageStatus('Start location and odometer need valid values.', true);
     return;
   }
   const stopResult = readMileageEditStops(startOdometer);
+  if (stopResult.cancelled) return;
   if (stopResult.error) {
     setMileageStatus(stopResult.error, true);
     return;
@@ -4312,6 +4427,7 @@ function saveMileageEditForm() {
     setMileageStatus('End location and odometer need valid, non-decreasing values.', true);
     return;
   }
+  if (!confirmMileageJump(stopResult.priorOdometer, endOdometer, 'final leg')) return;
   const updated = {
     ...log,
     startLocation,
@@ -4382,6 +4498,7 @@ function deleteMileageLog(id) {
 function clearMileageDay() {
   if (!confirm('Clear the open mileage day?')) return;
   mileageState.openSession = null;
+  endMileagePromptOpen = false;
   saveMileageState();
   renderMileageModule();
 }
@@ -4409,8 +4526,8 @@ function renderSettingsModule() {
         `;
       }).join('')}
     </div>
-    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>Mileage edit/delete syncs by Mileage ID in v0.2.9.</span></div>
-    <div class="module-version">VISTA v0.2.9</div>
+    <div class="module-empty module-about"><strong>About VISTA</strong><span>Vacation Inventory, Service & Task Administration for Alysha&apos;s live operations workflow.</span><span>Backend: Google Sheets mileage and notes starter connection.</span><span>v0.2.10 improves mileage field safety and clarity.</span></div>
+    <div class="module-version">VISTA v0.2.10</div>
   `;
   moduleBody.querySelectorAll('[data-dashboard-toggle]').forEach(input => {
     input.addEventListener('change', () => {
